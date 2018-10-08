@@ -1,0 +1,8 @@
+# IntelliJ IDEA project directory and files
+
+.idea/
+*.iml
+
+# Maven build dir
+
+target/
