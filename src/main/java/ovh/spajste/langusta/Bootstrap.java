@@ -1,4 +1,4 @@
-package ovh.spajste;
+package ovh.spajste.langusta;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
