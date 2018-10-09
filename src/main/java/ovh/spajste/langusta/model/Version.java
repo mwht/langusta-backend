@@ -48,6 +48,10 @@ public class Version {
         }
     }
 
+    /**
+     * If instance of {@link Version} exists, it returns one. If not, it creates one and then returns one.
+     * @return
+     */
     public static Version getInstance() {
         if(instance == null) instance = new Version();
         return instance;
