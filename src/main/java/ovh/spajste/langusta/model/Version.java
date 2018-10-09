@@ -1,8 +1,5 @@
 package ovh.spajste.langusta.model;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -34,15 +31,12 @@ public class Version {
     }
 
     public Version() {
-        Logger logger = LoggerFactory.getLogger(Version.class);
         commitHash = getGitCommandOutput("git log --format=%H -n 1");
         commitAuthor = getGitCommandOutput("git log --format=%an -n 1");
-        logger.debug("now getting commit author, the almighty " + commitAuthor);
         String rawDate = getGitCommandOutput("git log --format=%ad -n 1");
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z", Locale.ENGLISH);
         try {
             commitDate = simpleDateFormat.parse(rawDate);
-            logger.debug("kewl, date is " + commitDate.toString());
         } catch (Exception e) {
             commitDate = null;
         }
