@@ -43,7 +43,7 @@ public class Version {
         try {
             commitDate = simpleDateFormat.parse(rawDate);
             logger.debug("kewl, date is " + commitDate.toString());
-        } catch (ParseException pe) {
+        } catch (Exception e) {
             commitDate = null;
         }
     }
