@@ -1,16 +1,26 @@
 package ovh.spajste.langusta.model;
 
 public class User {
+    private long id;
     private String firstName;
     private String lastName;
     private String email;
     private String pass; // bcrypt? sha-512?
 
-    public User(String firstName, String lastName, String email, String pass) {
+    public User(long id, String firstName, String lastName, String email, String pass) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.pass = pass;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getEmail() {
