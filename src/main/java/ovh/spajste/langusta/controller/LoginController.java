@@ -11,7 +11,7 @@ import ovh.spajste.langusta.LoginStatus;
 @RestController
 public class LoginController {
 
-    @RequestMapping(value="/login", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @RequestMapping(value="/login", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public LoginStatus login(@RequestBody MultiValueMap<String, String> formData) {
         if(formData.containsKey("login")) {
             if(formData.containsKey("pass")) {
@@ -30,6 +30,11 @@ public class LoginController {
         } else {
             return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -4);
         }
+    }
+
+    @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public Object login(@RequestBody Object formData) {
+        return formData;
     }
 
 }
