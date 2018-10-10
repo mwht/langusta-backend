@@ -6,6 +6,11 @@ public class User {
     private String lastName;
     private String email;
     private String pass; // bcrypt? sha-512?
+    private static User nullUser;
+
+    static {
+        nullUser = new User(-1,null,null,null,null);
+    }
 
     public User(long id, String firstName, String lastName, String email, String pass) {
         this.id = id;
@@ -53,5 +58,9 @@ public class User {
 
     public void setPass(String pass) {
         this.pass = pass;
+    }
+
+    public static User getNullUser() {
+        return nullUser;
     }
 }
