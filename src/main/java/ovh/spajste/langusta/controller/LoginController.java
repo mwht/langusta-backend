@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import ovh.spajste.langusta.LoginStatus;
+import ovh.spajste.langusta.PlainLoginParameters;
 
 @RestController
 public class LoginController {
@@ -33,8 +34,16 @@ public class LoginController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public Object login(@RequestBody Object formData) {
-        return formData;
+    public LoginStatus login(@RequestBody PlainLoginParameters loginParameters) {
+        if(loginParameters.getUsername().equals("falcon1986@o2.pl")) {
+            if(loginParameters.getPassword().equals("testpass")) {
+                return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, 1);
+            } else {
+                return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -1);
+            }
+        } else {
+            return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -2);
+        }
     }
 
 }
