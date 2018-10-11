@@ -28,4 +28,8 @@ public class GenericStatus {
     public Object getPayload() {
         return payload;
     }
+
+    public static GenericStatus createSuccessfulStatus(Object payload) {
+        return new GenericStatus(GenericState.STATUS_SUCCESS, null, payload);
+    }
 }
