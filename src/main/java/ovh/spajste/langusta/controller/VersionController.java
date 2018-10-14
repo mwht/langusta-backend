@@ -2,7 +2,7 @@ package ovh.spajste.langusta.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ovh.spajste.langusta.model.Version;
+import ovh.spajste.langusta.entity.Version;
 import ovh.spajste.langusta.GenericStatus;
 
 @RestController
