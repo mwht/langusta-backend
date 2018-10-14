@@ -1,7 +1,17 @@
-package ovh.spajste.langusta.model;
+package ovh.spajste.langusta.entity;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
 public class User {
-    private long id;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
+
     private String firstName;
     private String lastName;
     private String email;
@@ -12,7 +22,7 @@ public class User {
         nullUser = new User(-1,null,null,null,null);
     }
 
-    public User(long id, String firstName, String lastName, String email, String pass) {
+    public User(Integer id, String firstName, String lastName, String email, String pass) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -20,11 +30,11 @@ public class User {
         this.pass = pass;
     }
 
-    public long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
