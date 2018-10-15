@@ -1,9 +1,7 @@
 package ovh.spajste.langusta.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ovh.spajste.langusta.GenericStatus;
 import ovh.spajste.langusta.entity.User;
 import ovh.spajste.langusta.repository.UserRepository;
@@ -20,6 +18,12 @@ public class UserController {
     public Optional<User> getLoggedInUser() {
         return userRepository.findById(1);
         //return GenericStatus.createSuccessfulStatus(new User(1,"Tom", "Terca", "falcon1986@o2.pl", "some_sha512_or_bcrypt_hash"));
+    }
+
+    @PostMapping("/user/add")
+    public GenericStatus addUser(@RequestParam String email, @RequestParam String pass, @RequestParam String firstName, @RequestParam String lastName) {
+        userRepository.save(new User(null, firstName, lastName, email, pass));
+        return GenericStatus.createSuccessfulStatus(null);
     }
 
     @GetMapping("/user/{id}")
