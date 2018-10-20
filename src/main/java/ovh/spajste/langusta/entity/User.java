@@ -22,6 +22,10 @@ public class User {
         nullUser = new User(-1,null,null,null,null);
     }
 
+    public User() {
+        this(-1,null,null,null,null);
+    }
+
     public User(Integer id, String firstName, String lastName, String email, String pass) {
         this.id = id;
         this.firstName = firstName;
