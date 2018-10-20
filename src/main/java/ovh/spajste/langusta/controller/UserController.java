@@ -32,7 +32,7 @@ public class UserController {
             sessionHandle = sessionRepository.findBySessionToken(authToken);
             try {
                 Session session = sessionHandle.get();
-                return GenericStatus.createSuccessfulStatus(session.getUser());
+                return GenericStatus.createSuccessfulStatus(BasicUserDataView.getDataViewFor(session.getUser()));
             } catch (NoSuchElementException nsee) {
                 return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "Not logged in.", nsee);
             }
