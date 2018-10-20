@@ -3,6 +3,7 @@ package ovh.spajste.langusta.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ovh.spajste.langusta.GenericStatus;
+import ovh.spajste.langusta.dataview.BasicUserDataView;
 import ovh.spajste.langusta.entity.User;
 import ovh.spajste.langusta.repository.UserRepository;
 
@@ -31,7 +32,12 @@ public class UserController {
 
     @GetMapping("/user/all")
     public GenericStatus getAllUsers() {
-        return GenericStatus.createSuccessfulStatus(userRepository.findAll());
+        List<BasicUserDataView> userDataViewList = new ArrayList<BasicUserDataView>();
+        Iterable<User> users = userRepository.findAll();
+        for(User user: users) {
+            userDataViewList.add(BasicUserDataView.getDataViewFor(user));
+        }
+        return GenericStatus.createSuccessfulStatus(userDataViewList);
     }
 
     @DeleteMapping("/user/{id}")
@@ -48,7 +54,7 @@ public class UserController {
     public GenericStatus getUserById(@PathVariable("id") Integer id) {
         Optional<User> requestedUser = userRepository.findById(id);
         try {
-            return GenericStatus.createSuccessfulStatus(requestedUser.get());
+            return GenericStatus.createSuccessfulStatus(BasicUserDataView.getDataViewFor(requestedUser.get()));
         } catch (NoSuchElementException nsee){
             return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "User not found.", nsee);
         }
