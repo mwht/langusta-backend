@@ -42,12 +42,6 @@ public class LoginController {
                         String sessionToken = Session.getNewToken();
                         String ipAddress = httpServletRequest.getHeader("X-Forwarded-For");
                         if(ipAddress == null) httpServletRequest.getRemoteAddr();
-                        Enumeration<String> headers = httpServletRequest.getHeaderNames();
-
-                        while(headers.hasMoreElements()) {
-                            String headerName = headers.nextElement();
-                            System.out.println(headerName+": "+httpServletRequest.getHeader(headerName));
-                        }
 
                         String userAgent = httpServletRequest.getHeader("User-Agent");
                         if(userAgent == null) userAgent = "";
