@@ -15,8 +15,10 @@ import ovh.spajste.langusta.entity.User;
 import ovh.spajste.langusta.repository.SessionRepository;
 import ovh.spajste.langusta.repository.UserRepository;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -30,7 +32,7 @@ public class LoginController {
     SessionRepository sessionRepository;
 
     @RequestMapping(value="/login", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public LoginStatus login(@RequestBody MultiValueMap<String, String> formData, HttpServletResponse httpServletResponse) {
+    public LoginStatus login(@RequestBody MultiValueMap<String, String> formData, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         if(formData.containsKey("login")) {
             if(formData.containsKey("pass")) {
 
@@ -38,7 +40,19 @@ public class LoginController {
                     User userToAuth = userRepository.findByEmail(formData.get("login").get(0)).get(0);
                     if(formData.get("pass").get(0).equals(userToAuth.getPass())) {
                         String sessionToken = Session.getNewToken();
-                        Session authedSession = new Session(null, sessionToken, userToAuth, new Date(), "TODO", "TODO");
+                        String ipAddress = httpServletRequest.getHeader("X-Forwarded-For");
+                        if(ipAddress == null) httpServletRequest.getRemoteAddr();
+                        Enumeration<String> headers = httpServletRequest.getHeaderNames();
+
+                        while(headers.hasMoreElements()) {
+                            String headerName = headers.nextElement();
+                            System.out.println(headerName+": "+httpServletRequest.getHeader(headerName));
+                        }
+
+                        String userAgent = httpServletRequest.getHeader("User-Agent");
+                        if(userAgent == null) userAgent = "";
+
+                        Session authedSession = new Session(null, sessionToken, userToAuth, new Date(), ipAddress, userAgent);
                         sessionRepository.save(authedSession);
                         httpServletResponse.addHeader("X-Auth-Token", sessionToken);
                         return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, userToAuth.getId());
@@ -59,13 +73,18 @@ public class LoginController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public LoginStatus login(@RequestBody PlainLoginParameters loginParameters, HttpServletResponse httpServletResponse) {
+    public LoginStatus login(@RequestBody PlainLoginParameters loginParameters, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             List<User> userToAuthHandle = userRepository.findByEmail(loginParameters.getUsername());
             User userToAuth = userToAuthHandle.get(0);
             if(loginParameters.getPassword().equals(userToAuth.getPass())) {
                 String sessionToken = Session.getNewToken();
-                Session validSession = new Session(null,sessionToken,userToAuth,new Date(),"TODO","TODO");
+                String ipAddress = httpServletRequest.getHeader("X-Forwarded-For");
+                if(ipAddress == null) httpServletRequest.getRemoteAddr();
+
+                String userAgent = httpServletRequest.getHeader("User-Agent");
+                if(userAgent == null) userAgent = "";
+                Session validSession = new Session(null,sessionToken,userToAuth,new Date(),ipAddress,userAgent);
                 sessionRepository.save(validSession);
                 httpServletResponse.addHeader("X-Auth-Token", sessionToken);
                 return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, userToAuth.getId());
