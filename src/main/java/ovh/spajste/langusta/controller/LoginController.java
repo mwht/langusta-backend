@@ -17,6 +17,8 @@ import ovh.spajste.langusta.repository.UserRepository;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 public class LoginController {
@@ -58,13 +60,19 @@ public class LoginController {
 
     @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
     public LoginStatus login(@RequestBody PlainLoginParameters loginParameters, HttpServletResponse httpServletResponse) {
-        if(loginParameters.getUsername().equals("falcon1986@o2.pl")) {
-            if(loginParameters.getPassword().equals("testpass")) {
-                return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, 1);
+        try {
+            List<User> userToAuthHandle = userRepository.findByEmail(loginParameters.getUsername());
+            User userToAuth = userToAuthHandle.get(0);
+            if(loginParameters.getPassword().equals(userToAuth.getPass())) {
+                String sessionToken = Session.getNewToken();
+                Session validSession = new Session(null,sessionToken,userToAuth,new Date(),"TODO","TODO");
+                sessionRepository.save(validSession);
+                httpServletResponse.addHeader("X-Auth-Token", sessionToken);
+                return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, userToAuth.getId());
             } else {
                 return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -1);
             }
-        } else {
+        } catch (Exception e) {
             return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -2);
         }
     }
