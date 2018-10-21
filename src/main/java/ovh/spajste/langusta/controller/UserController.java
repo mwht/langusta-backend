@@ -41,7 +41,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/user/add")
+    @PostMapping("/user")
     public GenericStatus addUser(@RequestParam String email, @RequestParam String pass, @RequestParam String firstName, @RequestParam String lastName) {
         userRepository.save(new User(null, firstName, lastName, email, pass));
         return GenericStatus.createSuccessfulStatus(null);
