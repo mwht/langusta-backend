@@ -26,7 +26,7 @@ public class UserController {
     @Autowired
     private SessionRepository sessionRepository;
 
-    @Value("${langusta.hmac-secret")
+    @Value("${langusta.hmac-secret}")
     private String langustaHmacSecret;
 
     @GetMapping("/user/me")
