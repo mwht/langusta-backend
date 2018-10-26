@@ -29,7 +29,7 @@ public class SessionBuilder {
                 throw new TokenExpiredException("Token expired.");
             } else {
                 try {
-                    System.err.println(jwt.getClaim("trackingId").asString() + " " + userRepository.findById(jwt.getClaim("id").asInt()).get());
+                    System.err.println(jwt.getClaim("trackingId").asString() + " " + jwt.getClaim("id").asInt());
                 } catch (NoSuchElementException nsee) {
                     nsee.printStackTrace();
                 }
