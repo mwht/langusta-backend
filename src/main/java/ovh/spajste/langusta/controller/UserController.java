@@ -1,6 +1,7 @@
 package ovh.spajste.langusta.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import ovh.spajste.langusta.GenericStatus;
 import ovh.spajste.langusta.SessionBuilder;
@@ -25,6 +26,9 @@ public class UserController {
     @Autowired
     private SessionRepository sessionRepository;
 
+    @Value("${langusta.hmac-secret")
+    private String langustaHmacSecret;
+
     @GetMapping("/user/me")
     public GenericStatus getLoggedInUser(HttpServletRequest httpServletRequest) {
         String authToken = httpServletRequest.getHeader("X-Auth-Token");
@@ -33,7 +37,7 @@ public class UserController {
             //sessionHandle = sessionRepository.findByTrackingId(authToken);
             try {
                 //Session session = sessionHandle.get();
-                Session session = SessionBuilder.buildFromJWT(authToken);
+                Session session = SessionBuilder.buildFromJWT(authToken, langustaHmacSecret);
                 return GenericStatus.createSuccessfulStatus(BasicUserDataView.getDataViewFor(session.getUser()));
             } catch (NoSuchElementException nsee) {
                 return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "Not logged in.", nsee);

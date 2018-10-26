@@ -15,15 +15,12 @@ import java.util.Date;
 
 public class SessionBuilder {
 
-    @Value("${langusta.hmac-secret}")
-    private static String langustaHmacSecret;
-
     @Autowired
     private static UserRepository userRepository;
 
-    public static Session buildFromJWT(String token) {
+    public static Session buildFromJWT(String token, String secret) {
         try {
-            JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC512(langustaHmacSecret))
+            JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC512(secret))
                                          .withIssuer("SpajsTech Inc.")
                                          .build();
             DecodedJWT jwt = jwtVerifier.verify(token);
