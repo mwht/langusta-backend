@@ -11,7 +11,7 @@ public class Session {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    private String sessionToken;
+    private String trackingId;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
@@ -30,9 +30,9 @@ public class Session {
         return UUID.randomUUID().toString();
     }
 
-    public Session(Integer id, String sessionToken, User user, Date loginDate, String loginIp, String userAgent) {
+    public Session(Integer id, String trackingId, User user, Date loginDate, String loginIp, String userAgent) {
         this.id = id;
-        this.sessionToken = sessionToken;
+        this.trackingId = trackingId;
         this.user = user;
         this.loginDate = loginDate;
         if(loginDate != null)
@@ -47,8 +47,8 @@ public class Session {
         return id;
     }
 
-    public String getSessionToken() {
-        return sessionToken;
+    public String getTrackingId() {
+        return trackingId;
     }
 
     public User getUser() {
@@ -75,8 +75,8 @@ public class Session {
         this.id = id;
     }
 
-    public void setSessionToken(String sessionToken) {
-        this.sessionToken = sessionToken;
+    public void setTrackingId(String trackingId) {
+        this.trackingId = trackingId;
     }
 
     public void setUser(User user) {

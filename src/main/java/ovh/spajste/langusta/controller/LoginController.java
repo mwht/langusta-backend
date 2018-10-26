@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import ovh.spajste.langusta.GenericStatus;
 import ovh.spajste.langusta.LoginStatus;
 import ovh.spajste.langusta.PlainLoginParameters;
 import ovh.spajste.langusta.entity.Session;
@@ -81,7 +80,7 @@ public class LoginController {
                 Map<String, Object> jwtData = new HashMap<>();
                 jwtData.put("id", Integer.toString(validSession.getUser().getId()));
                 jwtData.put("expireDate", Long.toString(validSession.getExpiryDate().getTime()));
-                jwtData.put("trackingId", validSession.getSessionToken());
+                jwtData.put("trackingId", validSession.getTrackingId());
                 String token = JWT.create().withIssuer("SpajsTech Inc.").withHeader(jwtData).withExpiresAt(validSession.getExpiryDate()).sign(Algorithm.HMAC512("testsecret"));
                 sessionRepository.save(validSession);
                 httpServletResponse.addHeader("X-Auth-Token", token);
