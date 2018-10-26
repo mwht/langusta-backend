@@ -1,5 +1,7 @@
 package ovh.spajste.langusta.controller;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.MultiValueMap;
@@ -17,10 +19,7 @@ import ovh.spajste.langusta.repository.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @RestController
 public class LoginController {
@@ -79,6 +78,11 @@ public class LoginController {
                 String userAgent = httpServletRequest.getHeader("User-Agent");
                 if(userAgent == null) userAgent = "";
                 Session validSession = new Session(null,sessionToken,userToAuth,new Date(),ipAddress,userAgent);
+                Map<String, Object> jwtData = new HashMap<>();
+                jwtData.put("id", Integer.toString(validSession.getUser().getId()));
+                jwtData.put("expireDate", Long.toString(validSession.getExpiryDate().getTime()));
+                jwtData.put("trackingId", validSession.getSessionToken());
+                String token = JWT.create().withIssuer("SpajsTech Inc.").withHeader(jwtData).sign(Algorithm.HMAC512("testsecret"));
                 sessionRepository.save(validSession);
                 httpServletResponse.addHeader("X-Auth-Token", sessionToken);
                 return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, userToAuth.getId());
