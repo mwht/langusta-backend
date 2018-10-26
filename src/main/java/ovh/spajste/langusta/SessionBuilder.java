@@ -9,6 +9,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import ovh.spajste.langusta.entity.Session;
+import ovh.spajste.langusta.entity.User;
 import ovh.spajste.langusta.repository.UserRepository;
 
 import java.util.Date;
@@ -16,27 +17,26 @@ import java.util.NoSuchElementException;
 
 public class SessionBuilder {
 
-    @Autowired
-    private static UserRepository userRepository;
-
-    public static Session buildFromJWT(String token, String secret) {
+    public static Session buildFromJWT(String token, String secret, UserRepository userRepository) {
         try {
             JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC512(secret))
                                          .withIssuer("SpajsTech Inc.")
                                          .build();
             DecodedJWT jwt = jwtVerifier.verify(token);
+            User userToAuth = User.getNullUser();
             if(new Date().after(jwt.getExpiresAt())) {
                 throw new TokenExpiredException("Token expired.");
             } else {
                 try {
                     System.err.println(jwt.getClaim("trackingId").asString() + " " + jwt.getClaim("id").asInt());
+                    userToAuth = userRepository.findById(jwt.getClaim("id").asInt()).get();
                 } catch (NoSuchElementException nsee) {
                     nsee.printStackTrace();
                 }
                 Session result = new Session(
                       -1,
                       jwt.getClaim("trackingId").asString(),
-                      userRepository.findById(jwt.getClaim("id").asInt()).get(),
+                      userToAuth,
                       jwt.getIssuedAt(),
                         null,
                         null

@@ -37,7 +37,7 @@ public class UserController {
             //sessionHandle = sessionRepository.findByTrackingId(authToken);
             try {
                 //Session session = sessionHandle.get();
-                Session session = SessionBuilder.buildFromJWT(authToken, langustaHmacSecret);
+                Session session = SessionBuilder.buildFromJWT(authToken, langustaHmacSecret, userRepository);
                 return GenericStatus.createSuccessfulStatus(BasicUserDataView.getDataViewFor(session.getUser()));
             } catch (NoSuchElementException nsee) {
                 return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "Not logged in.", nsee);
