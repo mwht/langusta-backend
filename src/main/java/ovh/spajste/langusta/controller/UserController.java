@@ -41,6 +41,8 @@ public class UserController {
                 return GenericStatus.createSuccessfulStatus(BasicUserDataView.getDataViewFor(session.getUser()));
             } catch (NoSuchElementException nsee) {
                 return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "Not logged in.", nsee);
+            } catch (Exception e) {
+                return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "Unknown error occured.", e);
             }
         } else {
             return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "Not logged in.", null);
