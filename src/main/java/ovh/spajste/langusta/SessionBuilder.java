@@ -12,6 +12,7 @@ import ovh.spajste.langusta.entity.Session;
 import ovh.spajste.langusta.repository.UserRepository;
 
 import java.util.Date;
+import java.util.NoSuchElementException;
 
 public class SessionBuilder {
 
@@ -27,6 +28,11 @@ public class SessionBuilder {
             if(new Date().after(jwt.getExpiresAt())) {
                 throw new TokenExpiredException("Token expired.");
             } else {
+                try {
+                    System.err.println(jwt.getClaim("trackingId").asString() + " " + userRepository.findById(jwt.getClaim("id").asInt()).get());
+                } catch (NoSuchElementException nsee) {
+                    nsee.printStackTrace();
+                }
                 Session result = new Session(
                       -1,
                       jwt.getClaim("trackingId").asString(),
