@@ -29,7 +29,7 @@ public class UserController {
         String authToken = httpServletRequest.getHeader("X-Auth-Token");
         Optional<Session> sessionHandle;
         if(authToken != null) {
-            sessionHandle = sessionRepository.findBySessionToken(authToken);
+            sessionHandle = sessionRepository.findByTrackingId(authToken);
             try {
                 Session session = sessionHandle.get();
                 return GenericStatus.createSuccessfulStatus(BasicUserDataView.getDataViewFor(session.getUser()));
