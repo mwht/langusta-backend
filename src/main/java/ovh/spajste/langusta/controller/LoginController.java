@@ -1,30 +1,63 @@
 package ovh.spajste.langusta.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import ovh.spajste.langusta.GenericStatus;
 import ovh.spajste.langusta.LoginStatus;
 import ovh.spajste.langusta.PlainLoginParameters;
+import ovh.spajste.langusta.entity.Session;
+import ovh.spajste.langusta.entity.User;
+import ovh.spajste.langusta.repository.SessionRepository;
+import ovh.spajste.langusta.repository.UserRepository;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 public class LoginController {
 
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    SessionRepository sessionRepository;
+
     @RequestMapping(value="/login", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public LoginStatus login(@RequestBody MultiValueMap<String, String> formData) {
+    public LoginStatus login(@RequestBody MultiValueMap<String, String> formData, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         if(formData.containsKey("login")) {
             if(formData.containsKey("pass")) {
-                if(formData.get("login").get(0).equals("falcon1986@o2.pl")) {
-                    if(formData.get("pass").get(0).equals("testpass")) {
-                        return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, 1);
+
+                try {
+                    User userToAuth = userRepository.findByEmail(formData.get("login").get(0)).get(0);
+                    if(formData.get("pass").get(0).equals(userToAuth.getPass())) {
+                        String sessionToken = Session.getNewToken();
+                        String ipAddress = httpServletRequest.getHeader("X-Forwarded-For");
+                        if(ipAddress == null) httpServletRequest.getRemoteAddr();
+
+                        String userAgent = httpServletRequest.getHeader("User-Agent");
+                        if(userAgent == null) userAgent = "";
+
+                        Session authedSession = new Session(null, sessionToken, userToAuth, new Date(), ipAddress, userAgent);
+                        sessionRepository.save(authedSession);
+                        httpServletResponse.addHeader("X-Auth-Token", sessionToken);
+                        return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, userToAuth.getId());
                     } else {
-                        return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -1);
+                        return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, -1);
                     }
-                } else {
+                } catch (Exception e) {
+                    e.printStackTrace();
                     return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -2);
                 }
+
             } else {
                 return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -3);
             }
@@ -34,14 +67,25 @@ public class LoginController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public LoginStatus login(@RequestBody PlainLoginParameters loginParameters) {
-        if(loginParameters.getUsername().equals("falcon1986@o2.pl")) {
-            if(loginParameters.getPassword().equals("testpass")) {
-                return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, 1);
+    public LoginStatus login(@RequestBody PlainLoginParameters loginParameters, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        try {
+            List<User> userToAuthHandle = userRepository.findByEmail(loginParameters.getUsername());
+            User userToAuth = userToAuthHandle.get(0);
+            if(loginParameters.getPassword().equals(userToAuth.getPass())) {
+                String sessionToken = Session.getNewToken();
+                String ipAddress = httpServletRequest.getHeader("X-Forwarded-For");
+                if(ipAddress == null) httpServletRequest.getRemoteAddr();
+
+                String userAgent = httpServletRequest.getHeader("User-Agent");
+                if(userAgent == null) userAgent = "";
+                Session validSession = new Session(null,sessionToken,userToAuth,new Date(),ipAddress,userAgent);
+                sessionRepository.save(validSession);
+                httpServletResponse.addHeader("X-Auth-Token", sessionToken);
+                return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, userToAuth.getId());
             } else {
                 return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -1);
             }
-        } else {
+        } catch (Exception e) {
             return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -2);
         }
     }
