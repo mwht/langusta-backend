@@ -44,7 +44,7 @@ public class SessionBuilder {
                 return result;
             }
         } catch (JWTVerificationException jve) {
-            return null;
+            throw jve;
         }
     }
 }
