@@ -1,5 +1,7 @@
 package ovh.spajste.langusta.entity;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;

@@ -3,6 +3,7 @@ package ovh.spajste.langusta.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ovh.spajste.langusta.GenericStatus;
+import ovh.spajste.langusta.SessionBuilder;
 import ovh.spajste.langusta.dataview.BasicUserDataView;
 import ovh.spajste.langusta.entity.Session;
 import ovh.spajste.langusta.entity.User;
@@ -27,11 +28,12 @@ public class UserController {
     @GetMapping("/user/me")
     public GenericStatus getLoggedInUser(HttpServletRequest httpServletRequest) {
         String authToken = httpServletRequest.getHeader("X-Auth-Token");
-        Optional<Session> sessionHandle;
+        //Optional<Session> sessionHandle;
         if(authToken != null) {
-            sessionHandle = sessionRepository.findByTrackingId(authToken);
+            //sessionHandle = sessionRepository.findByTrackingId(authToken);
             try {
-                Session session = sessionHandle.get();
+                //Session session = sessionHandle.get();
+                Session session = SessionBuilder.buildFromJWT(authToken);
                 return GenericStatus.createSuccessfulStatus(BasicUserDataView.getDataViewFor(session.getUser()));
             } catch (NoSuchElementException nsee) {
                 return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "Not logged in.", nsee);
