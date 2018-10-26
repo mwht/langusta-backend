@@ -82,7 +82,7 @@ public class LoginController {
                 jwtData.put("id", Integer.toString(validSession.getUser().getId()));
                 jwtData.put("expireDate", Long.toString(validSession.getExpiryDate().getTime()));
                 jwtData.put("trackingId", validSession.getSessionToken());
-                String token = JWT.create().withIssuer("SpajsTech Inc.").withHeader(jwtData).sign(Algorithm.HMAC512("testsecret"));
+                String token = JWT.create().withIssuer("SpajsTech Inc.").withHeader(jwtData).withExpiresAt(validSession.getExpiryDate()).sign(Algorithm.HMAC512("testsecret"));
                 sessionRepository.save(validSession);
                 httpServletResponse.addHeader("X-Auth-Token", token);
                 return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, userToAuth.getId());
