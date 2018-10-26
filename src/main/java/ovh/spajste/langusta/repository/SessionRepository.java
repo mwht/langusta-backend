@@ -7,5 +7,5 @@ import ovh.spajste.langusta.entity.Session;
 import java.util.Optional;
 
 public interface SessionRepository extends CrudRepository<Session, Integer> {
-    Optional<Session> findBySessionToken(String sessionToken);
+    Optional<Session> findByTrackingId(String trackingId);
 }
