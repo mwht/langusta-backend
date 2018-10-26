@@ -32,4 +32,8 @@ public class GenericStatus {
     public static GenericStatus createSuccessfulStatus(Object payload) {
         return new GenericStatus(GenericState.STATUS_SUCCESS, null, payload);
     }
+
+    public static GenericStatus createFailedStatusWithAdditionalInfo(String additionalInfo, Object payload) {
+        return new GenericStatus(GenericState.STATUS_ERROR, additionalInfo, payload);
+    }
 }
