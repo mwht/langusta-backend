@@ -10,7 +10,7 @@ public class FacebookUserProfileController {
 
     @GetMapping("/facebook/profile/{id}")
     public GenericStatus getFacebookProfile(@PathVariable("id") String id) {
-
+        return GenericStatus.createSuccessfulStatus(null);
     }
 
 }

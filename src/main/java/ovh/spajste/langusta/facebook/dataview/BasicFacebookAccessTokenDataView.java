@@ -1,5 +1,7 @@
 package ovh.spajste.langusta.facebook.dataview;
 
+import ovh.spajste.langusta.facebook.entity.FacebookAccessToken;
+
 public class BasicFacebookAccessTokenDataView {
     private int id;
     private String accessToken;
@@ -11,6 +13,10 @@ public class BasicFacebookAccessTokenDataView {
     public BasicFacebookAccessTokenDataView(int id, String accessToken) {
         this.id = id;
         this.accessToken = accessToken;
+    }
+
+    public static BasicFacebookAccessTokenDataView getDataViewFor(FacebookAccessToken facebookAccessToken) {
+        return new BasicFacebookAccessTokenDataView(facebookAccessToken.getId(), facebookAccessToken.getAccessToken());
     }
 
     public int getId() {

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ovh.spajste.langusta.GenericStatus;
 import ovh.spajste.langusta.SessionBuilder;
 import ovh.spajste.langusta.entity.Session;
+import ovh.spajste.langusta.facebook.dataview.BasicFacebookAccessTokenDataView;
 import ovh.spajste.langusta.facebook.entity.FacebookAccessToken;
 import ovh.spajste.langusta.facebook.repository.FacebookAccessTokenRepository;
 import ovh.spajste.langusta.facebook.service.FacebookService;
@@ -13,6 +14,9 @@ import ovh.spajste.langusta.repository.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class FacebookAuthController {
@@ -53,8 +57,21 @@ public class FacebookAuthController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/facebook/tokens")
-    public GenericStatus getUserTokens() {
-
+    public GenericStatus getUserTokens(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        try {
+            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, userRepository, httpServletRequest);
+            List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
+            if(facebookAccessTokens != null) {
+                List<BasicFacebookAccessTokenDataView> basicFacebookAccessTokenDataViews = new ArrayList<>();
+                facebookAccessTokens.forEach(token -> basicFacebookAccessTokenDataViews.add(BasicFacebookAccessTokenDataView.getDataViewFor(token)));
+                return GenericStatus.createSuccessfulStatus(basicFacebookAccessTokenDataViews);
+            } else {
+                httpServletResponse.setStatus(204);
+                return GenericStatus.createSuccessfulStatus(null);
+            }
+        } catch (Exception e) {
+            return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, null, e);
+        }
     }
 
     @CrossOrigin(origins = "*")
