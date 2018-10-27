@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ovh.spajste.langusta.LoginStatus;
 import ovh.spajste.langusta.PlainLoginParameters;
 import ovh.spajste.langusta.entity.Session;
@@ -33,6 +30,7 @@ public class LoginController {
     @Value("${langusta.hmac-secret}")
     private String langustaHmacSecret;
 
+    @CrossOrigin(origins = "*")
     @RequestMapping(value="/login", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public LoginStatus login(@RequestBody MultiValueMap<String, String> formData, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         if(formData.containsKey("login")) {
