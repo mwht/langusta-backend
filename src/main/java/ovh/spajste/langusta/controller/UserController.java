@@ -30,23 +30,27 @@ public class UserController {
     @Value("${langusta.hmac-secret}")
     private String langustaHmacSecret;
 
+    @CrossOrigin(origins = "*")
     @GetMapping("/user/me")
     public GenericStatus getLoggedInUser(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        String authToken = httpServletRequest.getHeader("X-Auth-Token");
-        if(authToken != null) {
-            try {
-                Session session = SessionBuilder.buildFromJWT(authToken, langustaHmacSecret, userRepository);
-                return GenericStatus.createSuccessfulStatus(BasicUserDataView.getDataViewFor(session.getUser()));
-            } catch (NoSuchElementException nsee) {
+        try {
+            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, userRepository, httpServletRequest);
+            if (session != null) {
+                try {
+                    return GenericStatus.createSuccessfulStatus(BasicUserDataView.getDataViewFor(session.getUser()));
+                } catch (NoSuchElementException nsee) {
+                    httpServletResponse.setStatus(401);
+                    return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "Not logged in.", nsee);
+                } catch (Exception e) {
+                    httpServletResponse.setStatus(500);
+                    return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "Unknown error occured.", e);
+                }
+            } else {
                 httpServletResponse.setStatus(401);
-                return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "Not logged in.", nsee);
-            } catch (Exception e) {
-                httpServletResponse.setStatus(500);
-                return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "Unknown error occured.", e);
+                return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "Not logged in.", null);
             }
-        } else {
-            httpServletResponse.setStatus(401);
-            return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "Not logged in.", null);
+        } catch (Exception e) {
+            return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "Not logged in.", e);
         }
     }
 
