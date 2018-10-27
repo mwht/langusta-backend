@@ -23,14 +23,14 @@ public class FacebookService {
         FacebookConnectionFactory connectionFactory = new FacebookConnectionFactory(facebookAppId, facebookSecret);
         OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
         OAuth2Parameters params = new OAuth2Parameters();
-        params.setRedirectUri("http://145.239.80.74/api/facebook/authSuccess/"+authToken);
+        params.setRedirectUri("https://langusta.zapto.org/api/facebook/authSuccess/"+authToken);
         params.setScope("public_profile,email,user_birthday,pages_messaging,publish_to_groups");
         return oauthOperations.buildAuthorizeUrl(params);
     }
 
     public String createFacebookAccessToken(String code, String authToken) {
         FacebookConnectionFactory connectionFactory = new FacebookConnectionFactory(facebookAppId, facebookSecret);
-        AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, "http://145.239.80.74/api/facebook/authSuccess/"+authToken, null);
+        AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, "https://langusta.zapto.org/api/facebook/authSuccess/"+authToken, null);
         return accessGrant.getAccessToken();
     }
 
