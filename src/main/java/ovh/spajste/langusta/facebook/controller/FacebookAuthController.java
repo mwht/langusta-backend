@@ -33,6 +33,7 @@ public class FacebookAuthController {
     @Value("${langusta.hmac-secret}")
     private String langustaHmacSecret;
 
+    // TODO: limit returned amount of data
     @CrossOrigin(origins = "*")
     @GetMapping("/facebook/authSuccess/{authToken}")
     public GenericStatus onFacebookAuthSuccess(@RequestParam("code") String code, @PathVariable("authToken") String authToken, HttpServletRequest httpServletRequest) {

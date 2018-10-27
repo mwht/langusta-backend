@@ -8,6 +8,7 @@ import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Service;
+import ovh.spajste.langusta.facebook.entity.FacebookProfile;
 
 @Service
 public class FacebookService {
@@ -37,9 +38,9 @@ public class FacebookService {
         this.accessToken = accessToken;
     }
 
-    public String getName() {
+    public FacebookProfile getMyProfile() {
         Facebook facebook = new FacebookTemplate(accessToken);
-        String[] fields = {"id", "name"};
-        return facebook.fetchObject("me", String.class, fields);
+        String[] fields = {"id", "name", "picture{url}"};
+        return facebook.fetchObject("me", FacebookProfile.class, fields);
     }
 }
