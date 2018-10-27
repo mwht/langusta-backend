@@ -23,14 +23,18 @@ public class FacebookService {
         OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
         OAuth2Parameters params = new OAuth2Parameters();
         params.setRedirectUri("http://localhost:8080/facebook/authSuccess");
-        params.setScope("public_profile,email,user_birthday");
+        params.setScope("public_profile,email,user_birthday,pages_messaging,publish_to_groups");
         return oauthOperations.buildAuthorizeUrl(params);
     }
 
     public void createFacebookAccessToken(String code) {
         FacebookConnectionFactory connectionFactory = new FacebookConnectionFactory(facebookAppId, facebookSecret);
         AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, "http://localhost:8080/facebook/authSuccess", null);
-        accessToken = accessGrant.getAccessToken();
+        return accessGrant.getAccessToken();
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 
     public String getName() {
