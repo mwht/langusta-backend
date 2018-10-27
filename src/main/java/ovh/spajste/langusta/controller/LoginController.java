@@ -47,23 +47,25 @@ public class LoginController {
                         if(userAgent == null) userAgent = "";
 
                         Session validSession = new Session(null, trackingId, userToAuth, new Date(), ipAddress, userAgent);
-                        String token = JWT.create().withIssuer("SpajsTech Inc.").withClaim("id", validSession.getUser().getId()).withClaim("trackingId", validSession.getTrackingId()).withExpiresAt(validSession.getExpiryDate()).sign(Algorithm.HMAC512(langustaHmacSecret));
-                        //sessionRepository.save(authedSession);
-                        httpServletResponse.addHeader("X-Auth-Token", token);
-                        return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, userToAuth.getId());
+                        String token = JWT.create().withIssuer("SpajsTech Inc.").withIssuedAt(new Date()).withClaim("id", validSession.getUser().getId()).withClaim("trackingId", validSession.getTrackingId()).withExpiresAt(validSession.getExpiryDate()).sign(Algorithm.HMAC512(langustaHmacSecret));
+                        return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, userToAuth.getId(), token);
                     } else {
-                        return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, -1);
+                        httpServletResponse.setStatus(401);
+                        return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -1, null);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -2);
+                    httpServletResponse.setStatus(401);
+                    return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -2, null);
                 }
 
             } else {
-                return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -3);
+                httpServletResponse.setStatus(400);
+                return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -3, null);
             }
         } else {
-            return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -4);
+            httpServletResponse.setStatus(400);
+            return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -4, null);
         }
     }
 
@@ -80,15 +82,17 @@ public class LoginController {
                 String userAgent = httpServletRequest.getHeader("User-Agent");
                 if(userAgent == null) userAgent = "";
                 Session validSession = new Session(null,sessionToken,userToAuth,new Date(),ipAddress,userAgent);
-                String token = JWT.create().withIssuer("SpajsTech Inc.").withClaim("id", validSession.getUser().getId()).withClaim("trackingId", validSession.getTrackingId()).withExpiresAt(validSession.getExpiryDate()).sign(Algorithm.HMAC512(langustaHmacSecret));
+                String token = JWT.create().withIssuer("SpajsTech Inc.").withIssuedAt(new Date()).withClaim("id", validSession.getUser().getId()).withClaim("trackingId", validSession.getTrackingId()).withExpiresAt(validSession.getExpiryDate()).sign(Algorithm.HMAC512(langustaHmacSecret));
                 sessionRepository.save(validSession);
                 httpServletResponse.addHeader("X-Auth-Token", token);
-                return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, userToAuth.getId());
+                return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, userToAuth.getId(), token);
             } else {
-                return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -1);
+                httpServletResponse.setStatus(401);
+                return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -1, null);
             }
         } catch (Exception e) {
-            return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -2);
+            httpServletResponse.setStatus(401);
+            return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -2, null);
         }
     }
 
