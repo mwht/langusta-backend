@@ -50,21 +50,23 @@ public class LoginController {
 
                         Session validSession = new Session(null, trackingId, userToAuth, new Date(), ipAddress, userAgent);
                         String token = JWT.create().withIssuer("SpajsTech Inc.").withIssuedAt(new Date()).withClaim("id", validSession.getUser().getId()).withClaim("trackingId", validSession.getTrackingId()).withExpiresAt(validSession.getExpiryDate()).sign(Algorithm.HMAC512(langustaHmacSecret));
-                        //sessionRepository.save(authedSession);
-                        httpServletResponse.addHeader("X-Auth-Token", token);
                         return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, userToAuth.getId(), token);
                     } else {
+                        httpServletResponse.setStatus(401);
                         return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -1, null);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    httpServletResponse.setStatus(401);
                     return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -2, null);
                 }
 
             } else {
+                httpServletResponse.setStatus(400);
                 return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -3, null);
             }
         } else {
+            httpServletResponse.setStatus(400);
             return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -4, null);
         }
     }
@@ -87,9 +89,11 @@ public class LoginController {
                 httpServletResponse.addHeader("X-Auth-Token", token);
                 return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, userToAuth.getId(), token);
             } else {
+                httpServletResponse.setStatus(401);
                 return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -1, null);
             }
         } catch (Exception e) {
+            httpServletResponse.setStatus(401);
             return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -2, null);
         }
     }
