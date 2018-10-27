@@ -48,6 +48,7 @@ public class LoginController {
 
                         Session validSession = new Session(null, trackingId, userToAuth, new Date(), ipAddress, userAgent);
                         String token = JWT.create().withIssuer("SpajsTech Inc.").withIssuedAt(new Date()).withClaim("id", validSession.getUser().getId()).withClaim("trackingId", validSession.getTrackingId()).withExpiresAt(validSession.getExpiryDate()).sign(Algorithm.HMAC512(langustaHmacSecret));
+                        sessionRepository.save(validSession);
                         return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, userToAuth.getId(), token);
                     } else {
                         httpServletResponse.setStatus(401);
@@ -84,7 +85,6 @@ public class LoginController {
                 Session validSession = new Session(null,sessionToken,userToAuth,new Date(),ipAddress,userAgent);
                 String token = JWT.create().withIssuer("SpajsTech Inc.").withIssuedAt(new Date()).withClaim("id", validSession.getUser().getId()).withClaim("trackingId", validSession.getTrackingId()).withExpiresAt(validSession.getExpiryDate()).sign(Algorithm.HMAC512(langustaHmacSecret));
                 sessionRepository.save(validSession);
-                httpServletResponse.addHeader("X-Auth-Token", token);
                 return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, userToAuth.getId(), token);
             } else {
                 httpServletResponse.setStatus(401);
