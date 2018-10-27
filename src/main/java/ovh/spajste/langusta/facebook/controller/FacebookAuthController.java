@@ -2,10 +2,7 @@ package ovh.spajste.langusta.facebook.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ovh.spajste.langusta.GenericStatus;
 import ovh.spajste.langusta.SessionBuilder;
 import ovh.spajste.langusta.entity.Session;
@@ -34,7 +31,7 @@ public class FacebookAuthController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/facebook/authSuccess/{authToken}")
-    public GenericStatus onFacebookAuthSuccess(@RequestParam("code") String code, @RequestParam("authToken") String authToken,HttpServletRequest httpServletRequest) {
+    public GenericStatus onFacebookAuthSuccess(@RequestParam("code") String code, @PathVariable("authToken") String authToken, HttpServletRequest httpServletRequest) {
         try {
             //if(httpServletRequest.getHeader("X-Auth-Token") == null) throw new java.lang.IllegalAccessException("No Langusta auth token provided.");
             String langustaAuthToken = authToken;
@@ -55,8 +52,14 @@ public class FacebookAuthController {
     }
 
     @CrossOrigin(origins = "*")
+    @GetMapping("/facebook/tokens")
+    public GenericStatus getUserTokens() {
+
+    }
+
+    @CrossOrigin(origins = "*")
     @GetMapping("/facebook/createAuth/{authToken}")
-    public GenericStatus generateAuth(@RequestParam("authToken") String authToken, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    public GenericStatus generateAuth(@PathVariable("authToken") String authToken, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             /*if (httpServletRequest.getHeader("X-Auth-Token") == null)
                 throw new java.lang.IllegalAccessException("No Langusta auth token provided.");*/
