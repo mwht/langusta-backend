@@ -59,7 +59,7 @@ public class UserController {
         }
     }
 
-    @PostMapping(path = "/user", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(path = "/register", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public GenericStatus addUser(@RequestParam String email, @RequestParam String pass, @RequestParam String firstName, @RequestParam String lastName, HttpServletResponse httpServletResponse) {
         try {
             List<User> users = userRepository.findByEmail(email);
@@ -78,7 +78,7 @@ public class UserController {
         }
     }
 
-    @PostMapping(value = "/user", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/register", consumes = {MediaType.APPLICATION_JSON_VALUE})
     public GenericStatus addUser(@RequestBody User user, HttpServletResponse httpServletResponse) {
         try {
             List<User> users = userRepository.findByEmail(user.getEmail());
