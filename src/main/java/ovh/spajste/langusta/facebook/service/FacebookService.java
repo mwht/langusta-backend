@@ -43,4 +43,9 @@ public class FacebookService {
         String[] fields = {"id", "name", "picture{url}"};
         return facebook.fetchObject("me", FacebookProfile.class, fields);
     }
+
+    public void addNewPost(String content) {
+        Facebook facebook = new FacebookTemplate(accessToken);
+        facebook.feedOperations().updateStatus(content);
+    }
 }
