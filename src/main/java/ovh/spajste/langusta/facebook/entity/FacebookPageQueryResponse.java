@@ -1,5 +1,8 @@
 package ovh.spajste.langusta.facebook.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FacebookPageQueryResponse {
     class FacebookAccounts {
         class FacebookAccountsData {
