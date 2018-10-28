@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import ovh.spajste.langusta.LoginStatus;
@@ -38,7 +39,7 @@ public class LoginController {
 
                 try {
                     User userToAuth = userRepository.findByEmail(formData.get("login").get(0)).get(0);
-                    if(formData.get("pass").get(0).equals(userToAuth.getPass())) {
+                    if(BCrypt.checkpw(formData.get("pass").get(0), userToAuth.getPass())) {
                         String trackingId = Session.getNewToken();
                         String ipAddress = httpServletRequest.getHeader("X-Forwarded-For");
                         if(ipAddress == null) httpServletRequest.getRemoteAddr();
@@ -75,7 +76,7 @@ public class LoginController {
         try {
             List<User> userToAuthHandle = userRepository.findByEmail(loginParameters.getUsername());
             User userToAuth = userToAuthHandle.get(0);
-            if(loginParameters.getPassword().equals(userToAuth.getPass())) {
+            if(BCrypt.checkpw(loginParameters.getPassword(), userToAuth.getPass())) {
                 String sessionToken = Session.getNewToken();
                 String ipAddress = httpServletRequest.getHeader("X-Forwarded-For");
                 if(ipAddress == null) httpServletRequest.getRemoteAddr();
