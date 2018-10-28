@@ -3,6 +3,7 @@ package ovh.spajste.langusta.facebook.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ovh.spajste.langusta.GenericStatus;
@@ -33,7 +34,7 @@ public class FacebookPageController {
     private FacebookService facebookService;
 
     @CrossOrigin(origins = "*")
-    @PostMapping("/facebook/page/all")
+    @GetMapping("/facebook/page/all")
     public GenericStatus getAllPages(HttpServletRequest httpServletRequest) {
         try {
             Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, userRepository, httpServletRequest);
