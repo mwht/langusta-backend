@@ -5,40 +5,21 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FacebookPageQueryResponse {
     class FacebookAccounts {
-        class FacebookAccountsData {
-            private FacebookBasicPageInfo[] pageInfos;
-
-            public FacebookAccountsData() {
-                this(null);
-            }
-
-            public FacebookAccountsData(FacebookBasicPageInfo[] pageInfos) {
-                this.pageInfos = pageInfos;
-            }
-
-            public FacebookBasicPageInfo[] getPageInfos() {
-                return pageInfos;
-            }
-
-            public void setPageInfos(FacebookBasicPageInfo[] pageInfos) {
-                this.pageInfos = pageInfos;
-            }
-        }
-        private FacebookAccountsData data;
+        private FacebookBasicPageInfo[] data;
 
         public FacebookAccounts() {
             this(null);
         }
 
-        public FacebookAccounts(FacebookAccountsData facebookAccountsData) {
+        public FacebookAccounts(FacebookBasicPageInfo[] facebookAccountsData) {
             this.data = facebookAccountsData;
         }
 
-        public FacebookAccountsData getData() {
+        public FacebookBasicPageInfo[] getData() {
             return data;
         }
 
-        public void setData(FacebookAccountsData data) {
+        public void setData(FacebookBasicPageInfo[] data) {
             this.data = data;
         }
     }
