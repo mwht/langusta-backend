@@ -96,7 +96,7 @@ public class FacebookAuthController {
             Session session = SessionBuilder.buildFromJWT(authToken, langustaHmacSecret, userRepository);
             httpServletResponse.setStatus(301);
             httpServletResponse.addHeader("Set-Cookie", "fbauth="+session.getTrackingId());
-            httpServletResponse.addHeader("Location", facebookService.createFacebookAuthorizationURL(authToken));
+            httpServletResponse.addHeader("Location", facebookService.createFacebookAuthorizationURL());
             return GenericStatus.createSuccessfulStatus(null);
         } catch (Exception e) {
             httpServletResponse.setStatus(400);
