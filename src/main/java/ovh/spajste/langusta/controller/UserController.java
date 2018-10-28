@@ -3,6 +3,7 @@ package ovh.spajste.langusta.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 import ovh.spajste.langusta.GenericStatus;
 import ovh.spajste.langusta.SessionBuilder;
@@ -67,7 +68,7 @@ public class UserController {
                 httpServletResponse.setStatus(406);
                 return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "User already exists.", null);
             } else {
-                userRepository.save(new User(null, firstName, lastName, email, pass));
+                userRepository.save(new User(null, firstName, lastName, email, BCrypt.hashpw(pass, BCrypt.gensalt())));
                 mailService.sendMail(email, "Langusta registration notice", "Hello,\n\nYour mail has been given in registration at Langusta app.\nLangusta mail system");
                 httpServletResponse.setStatus(201);
                 return GenericStatus.createSuccessfulStatus(null);
@@ -86,6 +87,7 @@ public class UserController {
                 httpServletResponse.setStatus(406);
                 return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "User already exists.", null);
             } else {
+                user.setPass(BCrypt.hashpw(user.getPass(), BCrypt.gensalt()));
                 userRepository.save(user);
                 mailService.sendMail(user.getEmail(), "Langusta registration notice", "Hello,\n\nYour mail has been given in registration at Langusta app.\nLangusta mail system");
                 httpServletResponse.setStatus(201);
