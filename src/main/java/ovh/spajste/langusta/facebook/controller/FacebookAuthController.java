@@ -38,7 +38,6 @@ public class FacebookAuthController {
     @Value("${langusta.hmac-secret}")
     private String langustaHmacSecret;
 
-    // TODO: limit returned amount of data
     @CrossOrigin(origins = "*")
     @GetMapping("/facebook/authSuccess")
     public GenericStatus onFacebookAuthSuccess(@RequestParam("code") String code, HttpServletRequest httpServletRequest) {
@@ -61,7 +60,7 @@ public class FacebookAuthController {
                     accessToken
             );
             facebookAccessTokenRepository.save(facebookAccessToken);
-            return GenericStatus.createSuccessfulStatus(facebookAccessToken);
+            return GenericStatus.createSuccessfulStatus(BasicFacebookAccessTokenDataView.getDataViewFor(facebookAccessToken));
 
         } catch (Exception e) {
             return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "Can't obtain access token.", e);
