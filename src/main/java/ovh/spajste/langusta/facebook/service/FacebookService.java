@@ -44,10 +44,10 @@ public class FacebookService {
         return facebook.fetchObject("me", FacebookProfile.class, fields);
     }
 
-    public String[] getAllPages() {
+    public String getAllPages() {
         Facebook facebook = new FacebookTemplate(accessToken);
         String[] fields = {"accounts{id,name,fan_count,has_added_app,page_token,access_token}"};
-        return facebook.fetchObject("me", String[].class, fields);
+        return facebook.fetchObject("me", String.class, fields);
     }
 
     public void addNewPost(String content) {
