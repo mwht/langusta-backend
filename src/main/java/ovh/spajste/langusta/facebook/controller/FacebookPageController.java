@@ -40,6 +40,7 @@ public class FacebookPageController {
             Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, userRepository, httpServletRequest);
             List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
             if(facebookAccessTokens.size() > 0) {
+                facebookService.setAccessToken(facebookAccessTokens.get(0).getAccessToken());
                 return GenericStatus.createSuccessfulStatus(facebookService.getAllPages());
             } else {
                 throw new NoSuchElementException("No Facebook access tokens found!");
