@@ -57,16 +57,38 @@ public class UserController {
 
     @PostMapping(path = "/user", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public GenericStatus addUser(@RequestParam String email, @RequestParam String pass, @RequestParam String firstName, @RequestParam String lastName, HttpServletResponse httpServletResponse) {
-        userRepository.save(new User(null, firstName, lastName, email, pass));
-        httpServletResponse.setStatus(201);
-        return GenericStatus.createSuccessfulStatus(null);
+        try {
+            List<User> users = userRepository.findByEmail(email);
+            if (users.size() > 0) {
+                httpServletResponse.setStatus(406);
+                return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "User already exists.", null);
+            } else {
+                userRepository.save(new User(null, firstName, lastName, email, pass));
+                httpServletResponse.setStatus(201);
+                return GenericStatus.createSuccessfulStatus(null);
+            }
+        } catch (Exception e) {
+                httpServletResponse.setStatus(500);
+                return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, e.getMessage(), e);
+        }
     }
 
     @PostMapping(value = "/user", consumes = {MediaType.APPLICATION_JSON_VALUE})
     public GenericStatus addUser(@RequestBody User user, HttpServletResponse httpServletResponse) {
-        userRepository.save(user);
-        httpServletResponse.setStatus(201);
-        return GenericStatus.createSuccessfulStatus(null);
+        try {
+            List<User> users = userRepository.findByEmail(user.getEmail());
+            if(users.size() > 0) {
+                httpServletResponse.setStatus(406);
+                return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "User already exists.", null);
+            } else {
+                userRepository.save(user);
+                httpServletResponse.setStatus(201);
+                return GenericStatus.createSuccessfulStatus(null);
+            }
+        } catch (Exception e) {
+            httpServletResponse.setStatus(500);
+            return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, e.getMessage(), e);
+        }
     }
 
     @GetMapping("/user/all")
