@@ -8,6 +8,7 @@ import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Service;
+import ovh.spajste.langusta.facebook.entity.FacebookPageQueryResponse;
 import ovh.spajste.langusta.facebook.entity.FacebookProfile;
 
 @Service
@@ -44,10 +45,10 @@ public class FacebookService {
         return facebook.fetchObject("me", FacebookProfile.class, fields);
     }
 
-    public String getAllPages() {
+    public FacebookPageQueryResponse getAllPages() {
         Facebook facebook = new FacebookTemplate(accessToken);
         String[] fields = {"accounts{id,name,fan_count,has_added_app,page_token,access_token}"};
-        return facebook.fetchObject("me", String.class, fields);
+        return facebook.fetchObject("me", FacebookPageQueryResponse.class, fields);
     }
 
     public void addNewPost(String content) {
