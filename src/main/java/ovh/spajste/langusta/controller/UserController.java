@@ -11,6 +11,7 @@ import ovh.spajste.langusta.entity.Session;
 import ovh.spajste.langusta.entity.User;
 import ovh.spajste.langusta.repository.SessionRepository;
 import ovh.spajste.langusta.repository.UserRepository;
+import ovh.spajste.langusta.service.MailService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +31,9 @@ public class UserController {
 
     @Value("${langusta.hmac-secret}")
     private String langustaHmacSecret;
+
+    @Autowired
+    private MailService mailService;
 
     @CrossOrigin(origins = "*")
     @GetMapping("/user/me")
@@ -64,6 +68,7 @@ public class UserController {
                 return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "User already exists.", null);
             } else {
                 userRepository.save(new User(null, firstName, lastName, email, pass));
+                mailService.sendMail(email, "Langusta registration notice", "Hello,\n\nYour mail has been given in registration at Langusta app.\nLangusta mail system");
                 httpServletResponse.setStatus(201);
                 return GenericStatus.createSuccessfulStatus(null);
             }
@@ -82,6 +87,7 @@ public class UserController {
                 return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "User already exists.", null);
             } else {
                 userRepository.save(user);
+                mailService.sendMail(user.getEmail(), "Langusta registration notice", "Hello,\n\nYour mail has been given in registration at Langusta app.\nLangusta mail system");
                 httpServletResponse.setStatus(201);
                 return GenericStatus.createSuccessfulStatus(null);
             }
