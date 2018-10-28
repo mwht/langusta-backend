@@ -10,8 +10,10 @@ import ovh.spajste.langusta.facebook.dataview.BasicFacebookAccessTokenDataView;
 import ovh.spajste.langusta.facebook.entity.FacebookAccessToken;
 import ovh.spajste.langusta.facebook.repository.FacebookAccessTokenRepository;
 import ovh.spajste.langusta.facebook.service.FacebookService;
+import ovh.spajste.langusta.repository.SessionRepository;
 import ovh.spajste.langusta.repository.UserRepository;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
@@ -30,19 +32,29 @@ public class FacebookAuthController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private SessionRepository sessionRepository;
+
     @Value("${langusta.hmac-secret}")
     private String langustaHmacSecret;
 
     // TODO: limit returned amount of data
     @CrossOrigin(origins = "*")
-    @GetMapping("/facebook/authSuccess/{authToken}")
-    public GenericStatus onFacebookAuthSuccess(@RequestParam("code") String code, @PathVariable("authToken") String authToken, HttpServletRequest httpServletRequest) {
+    @GetMapping("/facebook/authSuccess")
+    public GenericStatus onFacebookAuthSuccess(@RequestParam("code") String code, HttpServletRequest httpServletRequest) {
         try {
             //if(httpServletRequest.getHeader("X-Auth-Token") == null) throw new java.lang.IllegalAccessException("No Langusta auth token provided.");
-            String langustaAuthToken = authToken;
-            String accessToken = facebookService.createFacebookAccessToken(code, langustaAuthToken);
-            Session session = SessionBuilder.buildFromJWT(langustaAuthToken, langustaHmacSecret, userRepository);
-            if(session == null) throw new java.lang.IllegalAccessException("Invalid Langusta auth token.");
+            String trackingId = null;
+            for(Cookie cookie: httpServletRequest.getCookies()) {
+                if(cookie.getName().equals("fbauth")) {
+                    trackingId = cookie.getValue();
+                    break;
+                }
+            }
+            Optional<Session> sessionHandle = sessionRepository.findByTrackingId(trackingId);
+            if(!sessionHandle.isPresent()) throw new java.lang.IllegalAccessException("Invalid Langusta auth token.");
+            Session session = sessionHandle.get();
+            String accessToken = facebookService.createFacebookAccessToken(code);
             FacebookAccessToken facebookAccessToken = new FacebookAccessToken(
                     null,
                     session.getUser(),
@@ -81,7 +93,9 @@ public class FacebookAuthController {
         try {
             /*if (httpServletRequest.getHeader("X-Auth-Token") == null)
                 throw new java.lang.IllegalAccessException("No Langusta auth token provided.");*/
+            Session session = SessionBuilder.buildFromJWT(authToken, langustaHmacSecret, userRepository);
             httpServletResponse.setStatus(301);
+            httpServletResponse.addHeader("Set-Cookie", "fbauth="+session.getTrackingId());
             httpServletResponse.addHeader("Location", facebookService.createFacebookAuthorizationURL(authToken));
             return GenericStatus.createSuccessfulStatus(null);
         } catch (Exception e) {
