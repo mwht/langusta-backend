@@ -2,6 +2,7 @@ package ovh.spajste.langusta.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ovh.spajste.langusta.GenericStatus;
 import ovh.spajste.langusta.SessionBuilder;
@@ -54,9 +55,16 @@ public class UserController {
         }
     }
 
-    @PostMapping("/user")
+    @PostMapping(path = "/user", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public GenericStatus addUser(@RequestParam String email, @RequestParam String pass, @RequestParam String firstName, @RequestParam String lastName, HttpServletResponse httpServletResponse) {
         userRepository.save(new User(null, firstName, lastName, email, pass));
+        httpServletResponse.setStatus(201);
+        return GenericStatus.createSuccessfulStatus(null);
+    }
+
+    @PostMapping(value = "/user", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public GenericStatus addUser(@RequestBody User user, HttpServletResponse httpServletResponse) {
+        userRepository.save(user);
         httpServletResponse.setStatus(201);
         return GenericStatus.createSuccessfulStatus(null);
     }
