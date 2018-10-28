@@ -44,6 +44,11 @@ public class FacebookService {
         return facebook.fetchObject("me", FacebookProfile.class, fields);
     }
 
+    public String getAllPages() {
+        Facebook facebook = new FacebookTemplate(accessToken);
+        return facebook.restOperations().getForObject("https://graph.facebook.com/v3.2/me?fields=accounts{id,name,fan_count,has_added_app,page_token,access_token}", String.class);
+    }
+
     public void addNewPost(String content) {
         Facebook facebook = new FacebookTemplate(accessToken);
         facebook.feedOperations().updateStatus(content);
