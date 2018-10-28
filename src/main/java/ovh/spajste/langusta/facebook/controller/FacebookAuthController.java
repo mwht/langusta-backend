@@ -94,7 +94,7 @@ public class FacebookAuthController {
                 throw new java.lang.IllegalAccessException("No Langusta auth token provided.");*/
             Session session = SessionBuilder.buildFromJWT(authToken, langustaHmacSecret, userRepository);
             httpServletResponse.setStatus(301);
-            httpServletResponse.addHeader("Set-Cookie", "fbauth="+session.getTrackingId());
+            httpServletResponse.addHeader("Set-Cookie", "fbauth="+session.getTrackingId()+"; path=/api");
             httpServletResponse.addHeader("Location", facebookService.createFacebookAuthorizationURL());
             return GenericStatus.createSuccessfulStatus(null);
         } catch (Exception e) {
