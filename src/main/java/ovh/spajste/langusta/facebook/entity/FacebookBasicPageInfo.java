@@ -1,5 +1,7 @@
 package ovh.spajste.langusta.facebook.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class FacebookBasicPageInfo {
     private String id;
     private String name;
@@ -29,18 +31,22 @@ public class FacebookBasicPageInfo {
         return name;
     }
 
+    @JsonProperty("fan_count")
     public Integer getFanCount() {
         return fanCount;
     }
 
-    public boolean isHasAddedApp() {
+    @JsonProperty("has_added_app")
+    public boolean getHasAddedApp() {
         return hasAddedApp;
     }
 
+    @JsonProperty("page_token")
     public String getPageToken() {
         return pageToken;
     }
 
+    @JsonProperty("access_token")
     public String getAccessToken() {
         return accessToken;
     }
