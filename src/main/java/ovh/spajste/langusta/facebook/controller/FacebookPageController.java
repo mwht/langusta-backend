@@ -52,7 +52,7 @@ public class FacebookPageController {
 
     @CrossOrigin(origins = "*")
     @PostMapping("/facebook/page/{id}/post")
-    public GenericStatus addNewPost(@PathVariable("id") String id, @RequestParam("content") String content, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    public GenericStatus addNewPost(@PathVariable("id") String id, @RequestBody String content, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, userRepository, httpServletRequest);
             List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
