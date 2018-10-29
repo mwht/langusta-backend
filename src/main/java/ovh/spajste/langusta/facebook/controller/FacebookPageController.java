@@ -10,6 +10,7 @@ import ovh.spajste.langusta.entity.Session;
 import ovh.spajste.langusta.facebook.entity.FacebookAccessToken;
 import ovh.spajste.langusta.facebook.entity.FacebookBasicPageInfo;
 import ovh.spajste.langusta.facebook.entity.FacebookPageQueryResponse;
+import ovh.spajste.langusta.facebook.entity.FacebookPost;
 import ovh.spajste.langusta.facebook.repository.FacebookAccessTokenRepository;
 import ovh.spajste.langusta.facebook.service.FacebookService;
 import ovh.spajste.langusta.repository.UserRepository;
@@ -54,12 +55,12 @@ public class FacebookPageController {
     @CrossOrigin(origins = "*")
     @PostMapping(path = "/facebook/page/{id}/post", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public GenericStatus addNewPost(@PathVariable("id") String id, @RequestParam String content, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        return addNewPostJson(id, content, httpServletRequest, httpServletResponse);
+        return addNewPostJson(id, new FacebookPost(content), httpServletRequest, httpServletResponse);
     }
 
     @CrossOrigin(origins = "*")
     @PostMapping(path = "/facebook/page/{id}/post", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public GenericStatus addNewPostJson(@PathVariable("id") String id, @RequestBody String content, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    public GenericStatus addNewPostJson(@PathVariable("id") String id, @RequestBody FacebookPost content, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, userRepository, httpServletRequest);
             List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
@@ -68,7 +69,7 @@ public class FacebookPageController {
                 FacebookPageQueryResponse facebookPageQueryResponse = facebookService.getAllPages();
                 for(FacebookBasicPageInfo facebookBasicPageInfo: facebookPageQueryResponse.getAccounts().getData()) {
                     if(id.equals(facebookBasicPageInfo.getId())) {
-                        facebookService.addNewPost(id, content);
+                        facebookService.addNewPost(id, content.getContent());
                         httpServletResponse.setStatus(201);
                         return GenericStatus.createSuccessfulStatus(null);
                     }
