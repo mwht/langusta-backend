@@ -62,8 +62,11 @@ public class FacebookPageController {
                 for(FacebookBasicPageInfo facebookBasicPageInfo: facebookPageQueryResponse.getAccounts().getData()) {
                     if(id.equals(facebookBasicPageInfo.getId())) {
                         facebookService.addNewPost(id, content);
+                        httpServletResponse.setStatus(201);
+                        return GenericStatus.createSuccessfulStatus(null);
                     }
                 }
+                return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "Facebook page not found!", null);
             } else {
                 throw new NoSuchElementException("No Facebook access tokens found!");
             }

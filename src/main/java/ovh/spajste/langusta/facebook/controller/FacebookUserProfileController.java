@@ -58,6 +58,7 @@ public class FacebookUserProfileController {
         }
     }
 
+    /*
     @CrossOrigin(origins = "*")
     @PostMapping(path = "/facebook/profile/post", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE})
     public GenericStatus addNewPostOnProfile(@RequestParam String content, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
@@ -78,5 +79,5 @@ public class FacebookUserProfileController {
             return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, e.getMessage(), e);
         }
     }
-
+    */
 }
