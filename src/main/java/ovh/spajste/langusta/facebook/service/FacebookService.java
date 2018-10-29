@@ -2,6 +2,7 @@ package ovh.spajste.langusta.facebook.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.social.facebook.api.Facebook;
+import org.springframework.social.facebook.api.PagePostData;
 import org.springframework.social.facebook.api.impl.FacebookTemplate;
 import org.springframework.social.facebook.connect.FacebookConnectionFactory;
 import org.springframework.social.oauth2.AccessGrant;
@@ -51,8 +52,8 @@ public class FacebookService {
         return facebook.fetchObject("me", FacebookPageQueryResponse.class, fields);
     }
 
-    public void addNewPost(String content) {
+    public void addNewPost(String pageId, String content) {
         Facebook facebook = new FacebookTemplate(accessToken);
-        facebook.feedOperations().updateStatus(content);
+        facebook.pageOperations().post(new PagePostData(pageId).message(content));
     }
 }

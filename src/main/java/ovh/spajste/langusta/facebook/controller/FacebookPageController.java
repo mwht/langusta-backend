@@ -2,19 +2,19 @@ package ovh.spajste.langusta.facebook.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ovh.spajste.langusta.GenericStatus;
 import ovh.spajste.langusta.SessionBuilder;
 import ovh.spajste.langusta.entity.Session;
 import ovh.spajste.langusta.facebook.entity.FacebookAccessToken;
+import ovh.spajste.langusta.facebook.entity.FacebookBasicPageInfo;
+import ovh.spajste.langusta.facebook.entity.FacebookPageQueryResponse;
 import ovh.spajste.langusta.facebook.repository.FacebookAccessTokenRepository;
 import ovh.spajste.langusta.facebook.service.FacebookService;
 import ovh.spajste.langusta.repository.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -42,6 +42,28 @@ public class FacebookPageController {
             if(facebookAccessTokens.size() > 0) {
                 facebookService.setAccessToken(facebookAccessTokens.get(0).getAccessToken());
                 return GenericStatus.createSuccessfulStatus(facebookService.getAllPages());
+            } else {
+                throw new NoSuchElementException("No Facebook access tokens found!");
+            }
+        } catch (Exception e) {
+            return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, e.getMessage(), e);
+        }
+    }
+
+    @CrossOrigin(origins = "*")
+    @PostMapping("/facebook/page/{id}/post")
+    public GenericStatus addNewPost(@PathVariable("id") String id, @RequestParam("content") String content, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        try {
+            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, userRepository, httpServletRequest);
+            List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
+            if(facebookAccessTokens.size() > 0) {
+                facebookService.setAccessToken(facebookAccessTokens.get(0).getAccessToken());
+                FacebookPageQueryResponse facebookPageQueryResponse = facebookService.getAllPages();
+                for(FacebookBasicPageInfo facebookBasicPageInfo: facebookPageQueryResponse.getAccounts().getData()) {
+                    if(id.equals(facebookBasicPageInfo.getId()) {
+                        facebookService.addNewPost(id, content);
+                    }
+                }
             } else {
                 throw new NoSuchElementException("No Facebook access tokens found!");
             }
