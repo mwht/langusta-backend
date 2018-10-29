@@ -2,6 +2,7 @@ package ovh.spajste.langusta.facebook.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ovh.spajste.langusta.GenericStatus;
 import ovh.spajste.langusta.SessionBuilder;
@@ -51,8 +52,14 @@ public class FacebookPageController {
     }
 
     @CrossOrigin(origins = "*")
-    @PostMapping("/facebook/page/{id}/post")
-    public GenericStatus addNewPost(@PathVariable("id") String id, @RequestBody String content, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    @PostMapping(path = "/facebook/page/{id}/post", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public GenericStatus addNewPost(@PathVariable("id") String id, @RequestParam String content, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        return addNewPostJson(id, content, httpServletRequest, httpServletResponse);
+    }
+
+    @CrossOrigin(origins = "*")
+    @PostMapping(path = "/facebook/page/{id}/post", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public GenericStatus addNewPostJson(@PathVariable("id") String id, @RequestBody String content, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, userRepository, httpServletRequest);
             List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
