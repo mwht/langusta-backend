@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FacebookPageQueryResponse {
-    class FacebookAccounts {
-        class FacebookPaging {
-            class FacebookCursors {
+    public class FacebookAccounts {
+        public class FacebookPaging {
+            public class FacebookCursors {
                 String before;
                 String after;
 
