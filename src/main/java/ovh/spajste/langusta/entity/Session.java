@@ -38,7 +38,7 @@ public class Session {
         this.user = user;
         this.loginDate = loginDate;
         if(loginDate != null)
-            this.expiryDate = new Date(loginDate.getTime() + (60000 * 15));
+            this.expiryDate = new Date(loginDate.getTime() + (60000 * 24 * 60));
         else
             this.expiryDate = null;
         this.loginIp = loginIp;
