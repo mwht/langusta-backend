@@ -26,7 +26,7 @@ public class FacebookService {
         OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
         OAuth2Parameters params = new OAuth2Parameters();
         params.setRedirectUri("https://langusta.zapto.org/api/facebook/authSuccess");
-        params.setScope("public_profile,email,user_birthday,manage_pages,publish_pages,pages_messaging,publish_to_groups,user_posts");
+        params.setScope("public_profile,email,user_birthday,manage_pages,publish_pages,pages_messaging,read_page_mailboxes,publish_to_groups,user_posts");
         return oauthOperations.buildAuthorizeUrl(params);
     }
 
@@ -55,5 +55,10 @@ public class FacebookService {
     public void addNewPost(String pageId, String content) {
         Facebook facebook = new FacebookTemplate(accessToken);
         facebook.pageOperations().post(new PagePostData(pageId).message(content));
+    }
+
+    public void sendMessageToPageConversation() {
+        Facebook facebook = new FacebookTemplate(accessToken);
+
     }
 }
