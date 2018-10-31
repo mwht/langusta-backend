@@ -12,13 +12,24 @@ import java.util.logging.Logger;
 @RestController
 public class FacebookPageWebhookController {
     @GetMapping("/facebook/webhook")
-    public String facebookHandshakeWebhookHandler(@RequestParam("hub.mode") String hubMode, @RequestParam("hub.challenge") String hubChallenge, @RequestParam("hub.verify_token") String hubVerifyToken, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        return hubChallenge;
-    }
+    public String facebookWebhookHandler(@RequestParam(name = "hub.mode", required = false) String hubMode,
+                                         @RequestParam(name = "hub.challenge", required = false) String hubChallenge,
+                                         @RequestParam(name = "hub.verify_token", required = false) String hubVerifyToken,
+                                         @RequestBody(required = false) String postData,
+                                         HttpServletRequest httpServletRequest,
+                                         HttpServletResponse httpServletResponse) {
 
-    @GetMapping("/facebook/webhook")
-    public String facebookWebhookHandler(@RequestBody String postData, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        Logger.getAnonymousLogger().info(postData);
+        if(hubMode != null) {
+            if(hubChallenge != null) {
+                if(hubVerifyToken != null) {
+                    return hubChallenge;
+                }
+            }
+        }
+
+        if(postData != null) {
+            Logger.getAnonymousLogger().info(postData);
+        }
         return "OK";
     }
 }
