@@ -1,9 +1,6 @@
 package ovh.spajste.langusta.facebook.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,7 +8,7 @@ import java.util.logging.Logger;
 
 @RestController
 public class FacebookPageWebhookController {
-    @GetMapping("/facebook/webhook")
+    @RequestMapping(name = "/facebook/webhook", method = {RequestMethod.GET, RequestMethod.POST})
     public String facebookWebhookHandler(@RequestParam(name = "hub.mode", required = false) String hubMode,
                                          @RequestParam(name = "hub.challenge", required = false) String hubChallenge,
                                          @RequestParam(name = "hub.verify_token", required = false) String hubVerifyToken,
