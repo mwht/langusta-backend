@@ -34,12 +34,12 @@ public class LoginController {
     @CrossOrigin(origins = "*")
     @RequestMapping(value="/login", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public LoginStatus login(@RequestBody MultiValueMap<String, String> formData, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        if(formData.containsKey("login")) {
-            if(formData.containsKey("pass")) {
+        if(formData.containsKey("username")) {
+            if(formData.containsKey("password")) {
 
                 try {
-                    User userToAuth = userRepository.findByEmail(formData.get("login").get(0)).get(0);
-                    if(BCrypt.checkpw(formData.get("pass").get(0), userToAuth.getPass())) {
+                    User userToAuth = userRepository.findByEmail(formData.get("username").get(0)).get(0);
+                    if(BCrypt.checkpw(formData.get("password").get(0), userToAuth.getPass())) {
                         String trackingId = Session.getNewToken();
                         String ipAddress = httpServletRequest.getHeader("X-Forwarded-For");
                         if(ipAddress == null) httpServletRequest.getRemoteAddr();
