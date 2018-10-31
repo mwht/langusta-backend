@@ -42,6 +42,7 @@ public class MailService {
             msg.setSentDate(new Date());
             msg.setText(message);
             Transport.send(msg, langustaMailLogin, langustaMailPass);
+            Logger.getGlobal().log(Level.INFO, "MailService: Sent mail to "+to);
         } catch (MessagingException mex) {
             Logger.getGlobal().log(Level.WARNING, "can't send mail to "+to+": "+mex);
         }
