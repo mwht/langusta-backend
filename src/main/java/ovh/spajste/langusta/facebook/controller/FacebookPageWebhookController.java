@@ -17,7 +17,7 @@ public class FacebookPageWebhookController {
     }
 
     @GetMapping("/facebook/webhook")
-    public String  facebookHandshakeWebhookHandler(@RequestBody String postData, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    public String facebookWebhookHandler(@RequestBody String postData, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         Logger.getAnonymousLogger().info(postData);
         return "OK";
     }
