@@ -10,6 +10,8 @@ import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 import java.util.Date;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 public class MailService {
@@ -41,7 +43,7 @@ public class MailService {
             msg.setText(message);
             Transport.send(msg, langustaMailLogin, langustaMailPass);
         } catch (MessagingException mex) {
-            System.err.println("send failed, exception: " + mex);
+            Logger.getGlobal().log(Level.WARNING, "can't send mail to "+to+": "+mex);
         }
     }
 
