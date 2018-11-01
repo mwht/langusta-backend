@@ -71,8 +71,10 @@ public class FacebookPageController {
                 FacebookPageQueryResponse facebookPageQueryResponse = facebookService.getAllPages();
                 for(FacebookBasicPageInfo facebookBasicPageInfo: facebookPageQueryResponse.getAccounts().getData()) {
                     if(id.equals(facebookBasicPageInfo.getId())) {
+                        String contentString = content.getContent();
+                        if(contentString.length() > 30) contentString = contentString.substring(0,30);
                         facebookService.addNewPost(id, content.getContent());
-                        facebookPostLogEntryRepository.save(new FacebookPostLogEntry(null, content.getContent().substring(0,30), new Date(), session));
+                        facebookPostLogEntryRepository.save(new FacebookPostLogEntry(null, contentString, new Date(), session));
                         httpServletResponse.setStatus(201);
                         return GenericStatus.createSuccessfulStatus(null);
                     }
