@@ -11,6 +11,7 @@ public class FacebookPostLogEntry {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+    private String pageId;
     private String content;
     private Date postDate;
 
@@ -19,11 +20,12 @@ public class FacebookPostLogEntry {
     private Session session;
 
     public FacebookPostLogEntry() {
-        this(null, null, null, null);
+        this(null, null, null, null, null);
     }
 
-    public FacebookPostLogEntry(Integer id, String content, Date postDate, Session session) {
+    public FacebookPostLogEntry(Integer id, String pageId, String content, Date postDate, Session session) {
         this.id = id;
+        this.pageId = pageId;
         this.content = content;
         this.postDate = postDate;
         this.session = session;
@@ -60,5 +62,13 @@ public class FacebookPostLogEntry {
 
     public void setSession(Session session) {
         this.session = session;
+    }
+
+    public String getPageId() {
+        return pageId;
+    }
+
+    public void setPageId(String pageId) {
+        this.pageId = pageId;
     }
 }
