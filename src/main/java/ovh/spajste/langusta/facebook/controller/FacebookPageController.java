@@ -64,7 +64,7 @@ public class FacebookPageController {
             if(facebookAccessTokens.size() > 0) {
                 facebookService.setAccessToken(facebookAccessTokens.get(0).getAccessToken());
                 FacebookResponse<FacebookBasicPageInfo> facebookPageQueryResponse = facebookService.getAllPages();
-                for(FacebookBasicPageInfo facebookBasicPageInfo: facebookPageQueryResponse.getAccounts().getData()) {
+                for(FacebookBasicPageInfo facebookBasicPageInfo: facebookPageQueryResponse.getDataHeaders().getData()) {
                     if(id.equals(facebookBasicPageInfo.getId())) {
                         facebookService.addNewPost(id, content.getContent());
                         httpServletResponse.setStatus(201);

@@ -11,11 +11,16 @@ import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import ovh.spajste.langusta.facebook.entity.FacebookBasicPageInfo;
+import ovh.spajste.langusta.facebook.entity.FacebookConversationId;
 import ovh.spajste.langusta.facebook.entity.FacebookProfile;
 import ovh.spajste.langusta.facebook.entity.FacebookResponse;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -68,6 +73,32 @@ public class FacebookService {
             Logger.getGlobal().log(Level.SEVERE,e.getMessage());
         }
         return response;
+    }
+
+    public FacebookResponse<FacebookConversationId> getIdsForAllConversations() {
+        Facebook facebook = new FacebookTemplate(accessToken);
+        String[] fields = {"conversations{id}"};
+        FacebookResponse<FacebookConversationId> response = null;
+        String fbResponse = facebook.fetchObject("me", String.class, fields);
+        try {
+
+            ObjectMapper mapper = new ObjectMapper();
+            response = mapper.readValue(fbResponse, new TypeReference<FacebookResponse<FacebookConversationId>>() {
+            });
+
+        } catch (IOException e) {
+            Logger.getGlobal().log(Level.SEVERE,e.getMessage());
+        }
+        return response;
+    }
+
+    public void sendMessage(FacebookConversationId facebookConversationId, String content) {
+        Facebook facebook = new FacebookTemplate(accessToken);
+        MultiValueMap<String, Object> fields = new LinkedMultiValueMap<>();
+        ArrayList<Object> strings = new ArrayList<>();
+        strings.add(content);
+        fields.put("message",strings);
+        facebook.post(facebookConversationId.getId(), fields);
     }
 
     public void addNewPost(String pageId, String content) {

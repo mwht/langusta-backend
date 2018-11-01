@@ -95,7 +95,7 @@ public class FacebookResponse<T> {
         this.id = id;
     }
 
-    public FacebookDataHeader getAccounts() {
+    public FacebookDataHeader getDataHeaders() {
         return accounts;
     }
 
@@ -103,7 +103,7 @@ public class FacebookResponse<T> {
         return id;
     }
 
-    public void setAccounts(FacebookDataHeader accounts) {
+    public void setDataHeaders(FacebookDataHeader accounts) {
         this.accounts = accounts;
     }
 
