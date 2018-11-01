@@ -14,8 +14,6 @@ import java.lang.reflect.ParameterizedType;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FacebookResponse<T> {
 
-    private final Class<T> type;
-
     public class FacebookDataHeader {
         public class FacebookPaging {
             public class FacebookCursors {
@@ -105,8 +103,6 @@ public class FacebookResponse<T> {
     public FacebookResponse(FacebookDataHeader facebookDataHeader, String id) {
         this.dataHeader = facebookDataHeader;
         this.id = id;
-        this.type = (Class<T>) ((ParameterizedType) getClass()
-                .getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
     @JsonProperty("p")
