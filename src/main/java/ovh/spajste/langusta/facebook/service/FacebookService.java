@@ -73,7 +73,7 @@ public class FacebookService {
         ArrayList<Object> strings = new ArrayList<>();
         strings.add(content);
         fields.put("message",strings);
-        facebook.post(facebookConversationId.getId(), fields);
+        facebook.post(facebookConversationId.getId()+"/messages", fields);
     }
 
     public void addNewPost(String pageId, String content) {
