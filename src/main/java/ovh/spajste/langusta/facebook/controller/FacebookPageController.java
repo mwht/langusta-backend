@@ -9,11 +9,13 @@ import ovh.spajste.langusta.SessionBuilder;
 import ovh.spajste.langusta.entity.Session;
 import ovh.spajste.langusta.facebook.entity.*;
 import ovh.spajste.langusta.facebook.repository.FacebookAccessTokenRepository;
+import ovh.spajste.langusta.facebook.repository.FacebookPostLogEntryRepository;
 import ovh.spajste.langusta.facebook.service.FacebookService;
 import ovh.spajste.langusta.repository.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -28,6 +30,9 @@ public class FacebookPageController {
 
     @Autowired
     private FacebookAccessTokenRepository facebookAccessTokenRepository;
+
+    @Autowired
+    private FacebookPostLogEntryRepository facebookPostLogEntryRepository;
 
     @Autowired
     private FacebookService facebookService;
@@ -67,6 +72,7 @@ public class FacebookPageController {
                 for(FacebookBasicPageInfo facebookBasicPageInfo: facebookPageQueryResponse.getAccounts().getData()) {
                     if(id.equals(facebookBasicPageInfo.getId())) {
                         facebookService.addNewPost(id, content.getContent());
+                        facebookPostLogEntryRepository.save(new FacebookPostLogEntry(null, content.getContent().substring(0,30), new Date(), session));
                         httpServletResponse.setStatus(201);
                         return GenericStatus.createSuccessfulStatus(null);
                     }
