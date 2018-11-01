@@ -74,16 +74,20 @@ public class FacebookPageController {
                         String contentString = content.getContent();
                         if(contentString.length() > 30) contentString = contentString.substring(0,30);
                         facebookService.addNewPost(id, content.getContent());
-                        facebookPostLogEntryRepository.save(new FacebookPostLogEntry(null, contentString, new Date(), session));
+                        FacebookPostLogEntry facebookPostLogEntry = new FacebookPostLogEntry(null, contentString, new Date(), session);
+                        facebookPostLogEntryRepository.save(facebookPostLogEntry);
                         httpServletResponse.setStatus(201);
                         return GenericStatus.createSuccessfulStatus(null);
                     }
                 }
+                httpServletResponse.setStatus(404);
                 return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "Facebook page not found!", null);
             } else {
+                httpServletResponse.setStatus(400);
                 throw new NoSuchElementException("No Facebook access tokens found!");
             }
         } catch (Exception e) {
+            httpServletResponse.setStatus(500);
             return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, e.getMessage(), e);
         }
     }
