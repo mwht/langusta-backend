@@ -12,7 +12,6 @@ import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Service;
 import ovh.spajste.langusta.facebook.entity.FacebookBasicPageInfo;
-import ovh.spajste.langusta.facebook.entity.FacebookPageQueryResponse;
 import ovh.spajste.langusta.facebook.entity.FacebookProfile;
 import ovh.spajste.langusta.facebook.entity.FacebookResponse;
 
