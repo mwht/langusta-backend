@@ -7,10 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ovh.spajste.langusta.GenericStatus;
 import ovh.spajste.langusta.SessionBuilder;
 import ovh.spajste.langusta.entity.Session;
-import ovh.spajste.langusta.facebook.entity.FacebookAccessToken;
-import ovh.spajste.langusta.facebook.entity.FacebookBasicPageInfo;
-import ovh.spajste.langusta.facebook.entity.FacebookPageQueryResponse;
-import ovh.spajste.langusta.facebook.entity.FacebookPost;
+import ovh.spajste.langusta.facebook.entity.*;
 import ovh.spajste.langusta.facebook.repository.FacebookAccessTokenRepository;
 import ovh.spajste.langusta.facebook.service.FacebookService;
 import ovh.spajste.langusta.repository.UserRepository;
@@ -66,7 +63,7 @@ public class FacebookPageController {
             List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
             if(facebookAccessTokens.size() > 0) {
                 facebookService.setAccessToken(facebookAccessTokens.get(0).getAccessToken());
-                FacebookPageQueryResponse facebookPageQueryResponse = facebookService.getAllPages();
+                FacebookResponse<FacebookBasicPageInfo> facebookPageQueryResponse = facebookService.getAllPages();
                 for(FacebookBasicPageInfo facebookBasicPageInfo: facebookPageQueryResponse.getAccounts().getData()) {
                     if(id.equals(facebookBasicPageInfo.getId())) {
                         facebookService.addNewPost(id, content.getContent());

@@ -1,5 +1,7 @@
 package ovh.spajste.langusta.facebook.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.facebook.api.PagePostData;
@@ -9,8 +11,14 @@ import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Service;
+import ovh.spajste.langusta.facebook.entity.FacebookBasicPageInfo;
 import ovh.spajste.langusta.facebook.entity.FacebookPageQueryResponse;
 import ovh.spajste.langusta.facebook.entity.FacebookProfile;
+import ovh.spajste.langusta.facebook.entity.FacebookResponse;
+
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 public class FacebookService {
@@ -26,7 +34,7 @@ public class FacebookService {
         OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
         OAuth2Parameters params = new OAuth2Parameters();
         params.setRedirectUri("https://langusta.zapto.org/api/facebook/authSuccess");
-        params.setScope("public_profile,email,user_birthday,manage_pages,publish_pages,pages_messaging,read_page_mailboxes,publish_to_groups,user_posts");
+        params.setScope("public_profile,email,user_birthday,manage_pages,publish_pages,pages_messaging,publish_to_groups,read_page_mailboxes,user_posts");
         return oauthOperations.buildAuthorizeUrl(params);
     }
 
@@ -46,19 +54,25 @@ public class FacebookService {
         return facebook.fetchObject("me", FacebookProfile.class, fields);
     }
 
-    public FacebookPageQueryResponse getAllPages() {
+    public FacebookResponse<FacebookBasicPageInfo> getAllPages() {
         Facebook facebook = new FacebookTemplate(accessToken);
         String[] fields = {"accounts{id,name,fan_count,has_added_app,page_token,access_token}"};
-        return facebook.fetchObject("me", FacebookPageQueryResponse.class, fields);
+        FacebookResponse<FacebookBasicPageInfo> response = null;
+        String fbResponse = facebook.fetchObject("me", String.class, fields);
+        try {
+
+            ObjectMapper mapper = new ObjectMapper();
+            response = mapper.readValue(fbResponse, new TypeReference<FacebookResponse<FacebookBasicPageInfo>>() {
+            });
+
+        } catch (IOException e) {
+            Logger.getGlobal().log(Level.SEVERE,e.getMessage());
+        }
+        return response;
     }
 
     public void addNewPost(String pageId, String content) {
         Facebook facebook = new FacebookTemplate(accessToken);
         facebook.pageOperations().post(new PagePostData(pageId).message(content));
-    }
-
-    public void sendMessageToPageConversation() {
-        Facebook facebook = new FacebookTemplate(accessToken);
-
     }
 }
