@@ -33,8 +33,8 @@ public class FacebookMessageController {
     private FacebookService facebookService;
 
     @PostMapping(path = "/facebook/page/{id}/conversations/all/send", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public GenericStatus pageConversationSend(@PathVariable("id") String id, @RequestParam String content, HttpServletRequest httpServletRequest) {
-        return pageConversationSendJson(id, new FacebookPost(content), httpServletRequest);
+    public GenericStatus pageConversationSend(@PathVariable("id") String id, @RequestParam String content, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        return pageConversationSendJson(id, new FacebookPost(content), httpServletRequest, httpServletResponse);
     }
 
     @PostMapping(path = "/facebook/page/{id}/conversations/all/send", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
