@@ -13,6 +13,7 @@ import ovh.spajste.langusta.facebook.service.FacebookService;
 import ovh.spajste.langusta.repository.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -37,7 +38,7 @@ public class FacebookMessageController {
     }
 
     @PostMapping(path = "/facebook/page/{id}/conversations/all/send", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public GenericStatus pageConversationSendJson(@PathVariable("id") String id, @RequestBody FacebookPost content, HttpServletRequest httpServletRequest) {
+    public GenericStatus pageConversationSendJson(@PathVariable("id") String id, @RequestBody FacebookPost content, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, userRepository, httpServletRequest);
             List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
@@ -52,7 +53,7 @@ public class FacebookMessageController {
                         for(FacebookConversationId facebookConversationId: facebookService.getIdsForAllConversations().getConversations().getData()) {
                             facebookService.sendMessage(facebookConversationId, content.getContent());
                         }
-                    }
+                    }   httpServletResponse.setStatus(202);
                 }
             } else {
                 throw new NoSuchElementException("No Facebook access tokens found!");
