@@ -1,9 +1,21 @@
 package ovh.spajste.langusta.facebook.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FacebookResponse<T> {
+
+    private final Class<T> type;
+
     public class FacebookDataHeader {
         public class FacebookPaging {
             public class FacebookCursors {
@@ -82,7 +94,7 @@ public class FacebookResponse<T> {
             this.paging = paging;
         }
     }
-    private FacebookDataHeader accounts;
+    private FacebookDataHeader dataHeader;
 
     private String id;
 
@@ -91,12 +103,16 @@ public class FacebookResponse<T> {
     }
 
     public FacebookResponse(FacebookDataHeader facebookDataHeader, String id) {
-        this.accounts = facebookDataHeader;
+        this.dataHeader = facebookDataHeader;
         this.id = id;
+        this.type = (Class<T>) ((ParameterizedType) getClass()
+                .getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
+    @JsonProperty("p")
+    @JsonSerialize(using = FacebookResponseSerializer.class)
     public FacebookDataHeader getDataHeaders() {
-        return accounts;
+        return dataHeader;
     }
 
     public String getId() {
@@ -104,10 +120,18 @@ public class FacebookResponse<T> {
     }
 
     public void setDataHeaders(FacebookDataHeader accounts) {
-        this.accounts = accounts;
+        this.dataHeader = accounts;
     }
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    private class FacebookResponseSerializer extends JsonSerializer<Object> {
+        public void serialize(Object value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
+            jgen.writeStartObject();
+            jgen.writeObjectField("accounts", value);
+            jgen.writeEndObject();
+        }
     }
 }
