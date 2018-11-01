@@ -15,7 +15,7 @@ public class FacebookPostLogEntry {
     private String content;
     private Date postDate;
 
-    @OneToOne(cascade = CascadeType.MERGE)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "session_id")
     private Session session;
 
