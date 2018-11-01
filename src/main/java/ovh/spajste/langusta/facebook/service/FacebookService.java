@@ -15,6 +15,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import ovh.spajste.langusta.facebook.entity.FacebookBasicPageInfo;
 import ovh.spajste.langusta.facebook.entity.FacebookConversationId;
+import ovh.spajste.langusta.facebook.entity.FacebookPageQueryResponse;
 import ovh.spajste.langusta.facebook.entity.FacebookProfile;
 import ovh.spajste.langusta.facebook.entity.FacebookResponse;
 
