@@ -33,29 +33,7 @@ public class FacebookMessageController {
 
     @PostMapping(name = "/facebook/page/{pageid}/conversations/all/send", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public GenericStatus pageConversationSend(@PathVariable String pageid, @RequestParam String content, HttpServletRequest httpServletRequest) {
-        try {
-            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, userRepository, httpServletRequest);
-            List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
-            if(facebookAccessTokens.size() > 0) {
-                FacebookAccessToken facebookAccessToken = facebookAccessTokens.get(0);
-                facebookService.setAccessToken(facebookAccessToken.getAccessToken());
-                FacebookPageQueryResponse facebookBasicPageInfoFacebookResponse = facebookService.getAllPages();
-                for(FacebookBasicPageInfo facebookBasicPageInfo: facebookBasicPageInfoFacebookResponse.getAccounts().getData()) {
-                    if(pageid.equals(facebookBasicPageInfo.getId())) {
-                        String pageAccessToken = facebookBasicPageInfo.getAccessToken();
-                        facebookService.setAccessToken(pageAccessToken);
-                        for(FacebookConversationId facebookConversationId: facebookService.getIdsForAllConversations().getConversations().getData()) {
-                            facebookService.sendMessage(facebookConversationId, content);
-                        }
-                    }
-                }
-            } else {
-                throw new NoSuchElementException("No Facebook access tokens found!");
-            }
-            return GenericStatus.createSuccessfulStatus(null);
-        } catch (Exception e) {
-            return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, e.getMessage(), e);
-        }
+        return pageConversationSendJson(pageid, new FacebookPost(content), httpServletRequest);
     }
 
     @PostMapping(name = "/facebook/page/{pageid}/conversations/all/send", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
