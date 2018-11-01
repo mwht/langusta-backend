@@ -31,13 +31,13 @@ public class FacebookMessageController {
     @Autowired
     private FacebookService facebookService;
 
-    @PostMapping(name = "/facebook/page/{id}/conversations/all/send", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public GenericStatus pageConversationSend(@PathVariable("id") String pageid, @RequestParam String content, HttpServletRequest httpServletRequest) {
-        return pageConversationSendJson(pageid, new FacebookPost(content), httpServletRequest);
+    @PostMapping(path = "/facebook/page/{id}/conversations/all/send", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public GenericStatus pageConversationSend(@PathVariable("id") String id, @RequestParam String content, HttpServletRequest httpServletRequest) {
+        return pageConversationSendJson(id, new FacebookPost(content), httpServletRequest);
     }
 
-    @PostMapping(name = "/facebook/page/{id}/conversations/all/send", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public GenericStatus pageConversationSendJson(@PathVariable("id") String pageid, @RequestBody FacebookPost content, HttpServletRequest httpServletRequest) {
+    @PostMapping(path = "/facebook/page/{id}/conversations/all/send", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public GenericStatus pageConversationSendJson(@PathVariable("id") String id, @RequestBody FacebookPost content, HttpServletRequest httpServletRequest) {
         try {
             Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, userRepository, httpServletRequest);
             List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
@@ -46,7 +46,7 @@ public class FacebookMessageController {
                 facebookService.setAccessToken(facebookAccessToken.getAccessToken());
                 FacebookPageQueryResponse facebookBasicPageInfoFacebookResponse = facebookService.getAllPages();
                 for(FacebookBasicPageInfo facebookBasicPageInfo: facebookBasicPageInfoFacebookResponse.getAccounts().getData()) {
-                    if(pageid.equals(facebookBasicPageInfo.getId())) {
+                    if(id.equals(facebookBasicPageInfo.getId())) {
                         String pageAccessToken = facebookBasicPageInfo.getAccessToken();
                         facebookService.setAccessToken(pageAccessToken);
                         for(FacebookConversationId facebookConversationId: facebookService.getIdsForAllConversations().getConversations().getData()) {
