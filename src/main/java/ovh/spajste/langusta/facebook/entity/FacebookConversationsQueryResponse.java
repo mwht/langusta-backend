@@ -1,19 +1,10 @@
 package ovh.spajste.langusta.facebook.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import java.io.IOException;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class FacebookResponse<T> {
-
-    public class FacebookDataHeader {
+public class FacebookConversationsQueryResponse {
+    public class FacebookConversations {
         public class FacebookPaging {
             public class FacebookCursors {
                 String before;
@@ -65,21 +56,21 @@ public class FacebookResponse<T> {
         }
         private FacebookPaging paging;
 
-        private T[] data;
+        private FacebookConversationId[] data;
 
-        public FacebookDataHeader() {
+        public FacebookConversations() {
             this(null);
         }
 
-        public FacebookDataHeader(T[] facebookAccountsData) {
-            this.data = facebookAccountsData;
+        public FacebookConversations(FacebookConversationId[] facebookConversationsData) {
+            this.data = facebookConversationsData;
         }
 
-        public T[] getData() {
+        public FacebookConversationId[] getData() {
             return data;
         }
 
-        public void setData(T[] data) {
+        public void setData(FacebookConversationId[] data) {
             this.data = data;
         }
 
@@ -91,42 +82,32 @@ public class FacebookResponse<T> {
             this.paging = paging;
         }
     }
-    private FacebookDataHeader dataHeader;
+    private FacebookConversations conversations;
 
     private String id;
 
-    public FacebookResponse() {
-        this(null, null);
+    public FacebookConversationsQueryResponse() {
+
     }
 
-    public FacebookResponse(FacebookDataHeader facebookDataHeader, String id) {
-        this.dataHeader = facebookDataHeader;
+    public FacebookConversationsQueryResponse(FacebookConversations facebookAccounts, String id) {
+        this.conversations = facebookAccounts;
         this.id = id;
     }
 
-    @JsonProperty("p")
-    @JsonSerialize(using = FacebookResponseSerializer.class)
-    public FacebookDataHeader getDataHeaders() {
-        return dataHeader;
+    public FacebookConversations getConversations() {
+        return conversations;
     }
 
     public String getId() {
         return id;
     }
 
-    public void setDataHeaders(FacebookDataHeader accounts) {
-        this.dataHeader = accounts;
+    public void setConversations(FacebookConversations accounts) {
+        this.conversations = accounts;
     }
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    private class FacebookResponseSerializer extends JsonSerializer<Object> {
-        public void serialize(Object value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
-            jgen.writeStartObject();
-            jgen.writeObjectField("accounts", value);
-            jgen.writeEndObject();
-        }
     }
 }

@@ -13,11 +13,7 @@ import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import ovh.spajste.langusta.facebook.entity.FacebookBasicPageInfo;
-import ovh.spajste.langusta.facebook.entity.FacebookConversationId;
-import ovh.spajste.langusta.facebook.entity.FacebookPageQueryResponse;
-import ovh.spajste.langusta.facebook.entity.FacebookProfile;
-import ovh.spajste.langusta.facebook.entity.FacebookResponse;
+import ovh.spajste.langusta.facebook.entity.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -59,38 +55,16 @@ public class FacebookService {
         return facebook.fetchObject("me", FacebookProfile.class, fields);
     }
 
-    public FacebookResponse<FacebookBasicPageInfo> getAllPages() {
+    public FacebookPageQueryResponse getAllPages() {
         Facebook facebook = new FacebookTemplate(accessToken);
         String[] fields = {"accounts{id,name,fan_count,has_added_app,page_token,access_token}"};
-        FacebookResponse<FacebookBasicPageInfo> response = null;
-        String fbResponse = facebook.fetchObject("me", String.class, fields);
-        try {
-
-            ObjectMapper mapper = new ObjectMapper();
-            response = mapper.readValue(fbResponse, new TypeReference<FacebookResponse<FacebookBasicPageInfo>>() {
-            });
-
-        } catch (IOException e) {
-            Logger.getGlobal().log(Level.SEVERE,e.getMessage());
-        }
-        return response;
+        return facebook.fetchObject("me", FacebookPageQueryResponse.class, fields);
     }
 
-    public FacebookResponse<FacebookConversationId> getIdsForAllConversations() {
+    public FacebookConversationsQueryResponse getIdsForAllConversations() {
         Facebook facebook = new FacebookTemplate(accessToken);
         String[] fields = {"conversations{id}"};
-        FacebookResponse<FacebookConversationId> response = null;
-        String fbResponse = facebook.fetchObject("me", String.class, fields);
-        try {
-
-            ObjectMapper mapper = new ObjectMapper();
-            response = mapper.readValue(fbResponse, new TypeReference<FacebookResponse<FacebookConversationId>>() {
-            });
-
-        } catch (IOException e) {
-            Logger.getGlobal().log(Level.SEVERE,e.getMessage());
-        }
-        return response;
+        return facebook.fetchObject("me", FacebookConversationsQueryResponse.class, fields);
     }
 
     public void sendMessage(FacebookConversationId facebookConversationId, String content) {

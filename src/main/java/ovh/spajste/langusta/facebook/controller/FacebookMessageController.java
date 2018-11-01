@@ -8,6 +8,7 @@ import ovh.spajste.langusta.SessionBuilder;
 import ovh.spajste.langusta.entity.Session;
 import ovh.spajste.langusta.facebook.entity.FacebookAccessToken;
 import ovh.spajste.langusta.facebook.entity.FacebookBasicPageInfo;
+import ovh.spajste.langusta.facebook.entity.FacebookPageQueryResponse;
 import ovh.spajste.langusta.facebook.entity.FacebookResponse;
 import ovh.spajste.langusta.facebook.repository.FacebookAccessTokenRepository;
 import ovh.spajste.langusta.facebook.service.FacebookService;
@@ -60,8 +61,8 @@ public class FacebookMessageController {
             if(facebookAccessTokens.size() > 0) {
                 FacebookAccessToken facebookAccessToken = facebookAccessTokens.get(0);
                 facebookService.setAccessToken(facebookAccessToken.getAccessToken());
-                FacebookResponse<FacebookBasicPageInfo> facebookBasicPageInfoFacebookResponse = facebookService.getAllPages();
-                for(FacebookBasicPageInfo facebookBasicPageInfo: facebookBasicPageInfoFacebookResponse.getDataHeaders().getData()) {
+                FacebookPageQueryResponse facebookBasicPageInfoFacebookResponse = facebookService.getAllPages();
+                for(FacebookBasicPageInfo facebookBasicPageInfo: facebookBasicPageInfoFacebookResponse.getAccounts().getData()) {
                     if(id.equals(facebookBasicPageInfo.getId())) {
                         String pageAccessToken = facebookBasicPageInfo.getAccessToken();
                         facebookService.setAccessToken(pageAccessToken);
