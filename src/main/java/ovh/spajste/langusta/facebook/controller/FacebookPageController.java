@@ -11,6 +11,7 @@ import ovh.spajste.langusta.facebook.entity.*;
 import ovh.spajste.langusta.facebook.repository.FacebookAccessTokenRepository;
 import ovh.spajste.langusta.facebook.repository.FacebookPostLogEntryRepository;
 import ovh.spajste.langusta.facebook.service.FacebookService;
+import ovh.spajste.langusta.repository.SessionRepository;
 import ovh.spajste.langusta.repository.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @RestController
 public class FacebookPageController {
@@ -27,6 +29,9 @@ public class FacebookPageController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private SessionRepository sessionRepository;
 
     @Autowired
     private FacebookAccessTokenRepository facebookAccessTokenRepository;
@@ -73,11 +78,17 @@ public class FacebookPageController {
                     if(id.equals(facebookBasicPageInfo.getId())) {
                         String contentString = content.getContent();
                         if(contentString.length() > 30) contentString = contentString.substring(0,30);
-                        facebookService.addNewPost(id, content.getContent());
-                        FacebookPostLogEntry facebookPostLogEntry = new FacebookPostLogEntry(null, id, contentString, new Date(), session);
-                        facebookPostLogEntryRepository.save(facebookPostLogEntry);
-                        httpServletResponse.setStatus(201);
-                        return GenericStatus.createSuccessfulStatus(null);
+                        Optional<Session> sessionOptional = sessionRepository.findByTrackingId(session.getTrackingId());
+                        if(sessionOptional.isPresent()) {
+                            FacebookPostLogEntry facebookPostLogEntry = new FacebookPostLogEntry(null, id, contentString, new Date(), sessionOptional.get());
+                            facebookPostLogEntryRepository.save(facebookPostLogEntry);
+                            facebookService.addNewPost(id, content.getContent());
+                            httpServletResponse.setStatus(201);
+                            return GenericStatus.createSuccessfulStatus(null);
+                        } else {
+                            httpServletResponse.setStatus(409);
+                            return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "Associated session not in database.", null);
+                        }
                     }
                 }
                 httpServletResponse.setStatus(404);
