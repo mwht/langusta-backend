@@ -16,10 +16,7 @@ import ovh.spajste.langusta.service.MailService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 public class UserController {
@@ -60,27 +57,27 @@ public class UserController {
         }
     }
 
-    @PostMapping(path = "/register", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public GenericStatus addUser(@RequestParam String email, @RequestParam String pass, @RequestParam String firstName, @RequestParam String lastName, HttpServletResponse httpServletResponse) {
-        try {
-            List<User> users = userRepository.findByEmail(email);
-            if (users.size() > 0) {
-                httpServletResponse.setStatus(406);
-                return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "User already exists.", null);
-            } else {
-                userRepository.save(new User(null, firstName, lastName, email, BCrypt.hashpw(pass, BCrypt.gensalt())));
-                mailService.sendMail(email, "Langusta registration notice", "Hello,\n\nYour mail has been given in registration at Langusta app.\nLangusta mail system");
-                httpServletResponse.setStatus(201);
-                return GenericStatus.createSuccessfulStatus(null);
-            }
-        } catch (Exception e) {
-                httpServletResponse.setStatus(500);
-                return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, e.getMessage(), e);
+    @GetMapping("/activate/{actcode}")
+    public void activateUser(@PathVariable("actcode") String activationCode, HttpServletResponse httpServletResponse) {
+        Optional<User> userToActivate = userRepository.findByActivationCode(activationCode);
+        httpServletResponse.setStatus(301);
+        if(userToActivate.isPresent()) {
+            userToActivate.get().setActivationCode("");
+            userToActivate.get().setActive(true);
+            userRepository.save(userToActivate.get());
+            httpServletResponse.addHeader("Location", "/login");
+        } else {
+            httpServletResponse.addHeader("Location", "/error");
         }
     }
 
+    @PostMapping(path = "/register", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public GenericStatus addUser(@RequestParam String email, @RequestParam String pass, @RequestParam String firstName, @RequestParam String lastName, HttpServletResponse httpServletResponse) {
+        return addUserJson(new User(null, email, pass, firstName, lastName, false, null), httpServletResponse);
+    }
+
     @PostMapping(value = "/register", consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public GenericStatus addUser(@RequestBody User user, HttpServletResponse httpServletResponse) {
+    public GenericStatus addUserJson(@RequestBody User user, HttpServletResponse httpServletResponse) {
         try {
             List<User> users = userRepository.findByEmail(user.getEmail());
             if(users.size() > 0) {
@@ -88,8 +85,9 @@ public class UserController {
                 return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "User already exists.", null);
             } else {
                 user.setPass(BCrypt.hashpw(user.getPass(), BCrypt.gensalt()));
+                user.setActivationCode(UUID.randomUUID().toString());
                 userRepository.save(user);
-                mailService.sendMail(user.getEmail(), "Langusta registration notice", "Hello,\n\nYour mail has been given in registration at Langusta app.\nLangusta mail system");
+                mailService.sendMail(user.getEmail(), "Langusta registration notice", "Hello,\n\nYour mail has been given in registration at Langusta app.\nActivate your account at https://langusta.zapto.org/api/activate/"+user.getActivationCode()+"\n\nLangusta mail system");
                 httpServletResponse.setStatus(201);
                 return GenericStatus.createSuccessfulStatus(null);
             }
