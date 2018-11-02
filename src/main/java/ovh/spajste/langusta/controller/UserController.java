@@ -40,7 +40,7 @@ public class UserController {
     @GetMapping("/user/me")
     public GenericStatus getLoggedInUser(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
-            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, userRepository, httpServletRequest);
+            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, sessionRepository, httpServletRequest);
             if (session != null) {
                 try {
                     return GenericStatus.createSuccessfulStatus(BasicUserDataView.getDataViewFor(session.getUser()));

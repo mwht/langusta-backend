@@ -10,6 +10,7 @@ import ovh.spajste.langusta.entity.Session;
 import ovh.spajste.langusta.facebook.entity.*;
 import ovh.spajste.langusta.facebook.repository.FacebookAccessTokenRepository;
 import ovh.spajste.langusta.facebook.service.FacebookService;
+import ovh.spajste.langusta.repository.SessionRepository;
 import ovh.spajste.langusta.repository.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +25,7 @@ public class FacebookMessageController {
     private String langustaHmacSecret;
 
     @Autowired
-    private UserRepository userRepository;
+    private SessionRepository sessionRepository;
 
     @Autowired
     private FacebookAccessTokenRepository facebookAccessTokenRepository;
@@ -40,7 +41,7 @@ public class FacebookMessageController {
     @PostMapping(path = "/facebook/page/{id}/conversations/all/send", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public GenericStatus pageConversationSendJson(@PathVariable("id") String id, @RequestBody FacebookPost content, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
-            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, userRepository, httpServletRequest);
+            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, sessionRepository, httpServletRequest);
             List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
             if(facebookAccessTokens.size() > 0) {
                 FacebookAccessToken facebookAccessToken = facebookAccessTokens.get(0);
@@ -67,7 +68,7 @@ public class FacebookMessageController {
     @GetMapping("/facebook/page/{id}/conversations")
     public GenericStatus getAllConversationsFromPage(@PathVariable String id, HttpServletRequest httpServletRequest) {
         try {
-            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, userRepository, httpServletRequest);
+            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, sessionRepository, httpServletRequest);
             List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
             if(facebookAccessTokens.size() > 0) {
                 FacebookAccessToken facebookAccessToken = facebookAccessTokens.get(0);

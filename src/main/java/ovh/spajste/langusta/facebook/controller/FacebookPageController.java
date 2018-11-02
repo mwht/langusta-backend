@@ -46,7 +46,7 @@ public class FacebookPageController {
     @GetMapping("/facebook/page/all")
     public GenericStatus getAllPages(HttpServletRequest httpServletRequest) {
         try {
-            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, userRepository, httpServletRequest);
+            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, sessionRepository, httpServletRequest);
             List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
             if(facebookAccessTokens.size() > 0) {
                 facebookService.setAccessToken(facebookAccessTokens.get(0).getAccessToken());
@@ -69,7 +69,7 @@ public class FacebookPageController {
     @PostMapping(path = "/facebook/page/{id}/post", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public GenericStatus addNewPostJson(@PathVariable("id") String id, @RequestBody FacebookPost content, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
-            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, userRepository, httpServletRequest);
+            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, sessionRepository, httpServletRequest);
             List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
             if(facebookAccessTokens.size() > 0) {
                 facebookService.setAccessToken(facebookAccessTokens.get(0).getAccessToken());
