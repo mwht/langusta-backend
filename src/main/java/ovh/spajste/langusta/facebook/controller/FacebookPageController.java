@@ -11,6 +11,7 @@ import ovh.spajste.langusta.facebook.entity.*;
 import ovh.spajste.langusta.facebook.repository.FacebookAccessTokenRepository;
 import ovh.spajste.langusta.facebook.repository.FacebookPostLogEntryRepository;
 import ovh.spajste.langusta.facebook.service.FacebookService;
+import ovh.spajste.langusta.repository.SessionRepository;
 import ovh.spajste.langusta.repository.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +27,7 @@ public class FacebookPageController {
     private String langustaHmacSecret;
 
     @Autowired
-    private UserRepository userRepository;
+    private SessionRepository sessionRepository;
 
     @Autowired
     private FacebookAccessTokenRepository facebookAccessTokenRepository;
