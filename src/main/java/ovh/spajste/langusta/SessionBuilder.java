@@ -8,6 +8,7 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import ovh.spajste.langusta.entity.Session;
 import ovh.spajste.langusta.entity.User;
+import ovh.spajste.langusta.repository.SessionRepository;
 import ovh.spajste.langusta.repository.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +19,7 @@ import java.util.regex.Pattern;
 
 public class SessionBuilder {
 
-    public static Session getCurrentSession(String secret, UserRepository userRepository, HttpServletRequest httpServletRequest) {
+    public static Session getCurrentSession(String secret, SessionRepository sessionRepository, HttpServletRequest httpServletRequest) {
         String jwtToken= null;
         if(httpServletRequest.getHeader("X-Auth-Token") != null) {
             jwtToken = httpServletRequest.getHeader("X-Auth-Token");
@@ -38,34 +39,26 @@ public class SessionBuilder {
             }
         }
 
-        Session resultSession = buildFromJWT(jwtToken, secret, userRepository);
+        Session resultSession = buildFromJWT(jwtToken, secret, sessionRepository);
         return resultSession;
     }
 
-    public static Session buildFromJWT(String token, String secret, UserRepository userRepository) {
+    public static Session buildFromJWT(String token, String secret, SessionRepository sessionRepository) {
         try {
             JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC512(secret))
                                          .withIssuer("SpajsTech Inc.")
                                          .build();
             DecodedJWT jwt = jwtVerifier.verify(token);
-            User userToAuth = User.getNullUser();
+            Session session = null;
             if(new Date().after(jwt.getExpiresAt())) {
                 throw new TokenExpiredException("Token expired.");
             } else {
                 try {
-                    userToAuth = userRepository.findById(jwt.getClaim("id").asInt()).get();
+                    session = sessionRepository.findByTrackingId(jwt.getClaim("trackingId").asString()).get();
                 } catch (NoSuchElementException nsee) {
-                    throw new IllegalStateException("User associated with session does not exist.");
+                    throw new IllegalStateException("Session does not exist.");
                 }
-                Session result = new Session(
-                      -1,
-                      jwt.getClaim("trackingId").asString(),
-                      userToAuth,
-                      jwt.getIssuedAt(),
-                        null,
-                        null
-                );
-                return result;
+                return session;
             }
         } catch (JWTVerificationException jve) {
             throw jve;
