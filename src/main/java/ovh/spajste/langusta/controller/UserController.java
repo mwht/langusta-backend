@@ -73,7 +73,7 @@ public class UserController {
 
     @PostMapping(path = "/register", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public GenericStatus addUser(@RequestParam String email, @RequestParam String pass, @RequestParam String firstName, @RequestParam String lastName, HttpServletResponse httpServletResponse) {
-        return addUserJson(new User(null, email, pass, firstName, lastName, false, null), httpServletResponse);
+        return addUserJson(new User(null, firstName, lastName, email, pass, false, null), httpServletResponse);
     }
 
     @PostMapping(value = "/register", consumes = {MediaType.APPLICATION_JSON_VALUE})
