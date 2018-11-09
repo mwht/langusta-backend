@@ -1,6 +1,7 @@
 package ovh.spajste.langusta.entity;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 public class Contest {
@@ -22,12 +23,13 @@ public class Contest {
     private Integer topCommLikes;
     private Integer likesAmount;
     private String winnerId; // FB/YT id
+    private Date endDate;
 
     public Contest() {
-        this(null,null,null,null,null,null,null,null,null);
+        this(null,null,null,null,null,null,null,null,null,null);
     }
 
-    public Contest(Integer id, User user, String title, Platform platform, String postLink, String topComments, Integer topCommLikes, Integer likesAmount, String winnerId) {
+    public Contest(Integer id, User user, String title, Platform platform, String postLink, String topComments, Integer topCommLikes, Integer likesAmount, String winnerId, Date endDate) {
         this.id = id;
         this.user = user;
         this.title = title;
@@ -37,6 +39,7 @@ public class Contest {
         this.topCommLikes = topCommLikes;
         this.likesAmount = likesAmount;
         this.winnerId = winnerId;
+        this.endDate = endDate;
     }
 
     public Integer getId() {
@@ -109,5 +112,13 @@ public class Contest {
 
     public void setWinnerId(String winnerId) {
         this.winnerId = winnerId;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 }
