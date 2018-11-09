@@ -48,7 +48,7 @@ public class ContestController {
                     platformRepository.findPlatformByCanonicalName(contestParameters.getPlatform()).get(),
                     contestParameters.getPostLink(),
                     null,
-                    null,
+                    0,
                     0,
                     null,
                     new Date(new Date().getTime() + 120000)
