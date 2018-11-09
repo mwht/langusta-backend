@@ -7,7 +7,6 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 import ovh.spajste.langusta.GenericStatus;
 import ovh.spajste.langusta.SessionBuilder;
-import ovh.spajste.langusta.dataview.BasicUserDataView;
 import ovh.spajste.langusta.entity.Session;
 import ovh.spajste.langusta.entity.User;
 import ovh.spajste.langusta.repository.SessionRepository;
@@ -114,6 +113,7 @@ public class UserController {
         }
     }
 
+    /* TODO: remove? */
     @GetMapping("/user/{id}")
     public GenericStatus getUserById(@PathVariable("id") Integer id, HttpServletResponse httpServletResponse) {
         Optional<User> requestedUser = userRepository.findById(id);
