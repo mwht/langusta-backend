@@ -1,5 +1,7 @@
 package ovh.spajste.langusta.facebook.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.facebook.api.PagePostData;
@@ -9,8 +11,15 @@ import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Service;
-import ovh.spajste.langusta.facebook.entity.FacebookPageQueryResponse;
-import ovh.spajste.langusta.facebook.entity.FacebookProfile;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import ovh.spajste.langusta.facebook.entity.*;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 public class FacebookService {
@@ -26,7 +35,7 @@ public class FacebookService {
         OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
         OAuth2Parameters params = new OAuth2Parameters();
         params.setRedirectUri("https://langusta.zapto.org/api/facebook/authSuccess");
-        params.setScope("public_profile,email,user_birthday,manage_pages,publish_pages,pages_messaging,publish_to_groups,user_posts");
+        params.setScope("public_profile,email,user_birthday,manage_pages,publish_pages,pages_messaging,publish_to_groups,read_page_mailboxes,user_posts");
         return oauthOperations.buildAuthorizeUrl(params);
     }
 
@@ -50,6 +59,21 @@ public class FacebookService {
         Facebook facebook = new FacebookTemplate(accessToken);
         String[] fields = {"accounts{id,name,fan_count,has_added_app,page_token,access_token}"};
         return facebook.fetchObject("me", FacebookPageQueryResponse.class, fields);
+    }
+
+    public FacebookConversationsQueryResponse getIdsForAllConversations() {
+        Facebook facebook = new FacebookTemplate(accessToken);
+        String[] fields = {"conversations{id}"};
+        return facebook.fetchObject("me", FacebookConversationsQueryResponse.class, fields);
+    }
+
+    public void sendMessage(FacebookConversationId facebookConversationId, String content) {
+        Facebook facebook = new FacebookTemplate(accessToken);
+        MultiValueMap<String, Object> fields = new LinkedMultiValueMap<>();
+        ArrayList<Object> strings = new ArrayList<>();
+        strings.add(content);
+        fields.put("message",strings);
+        facebook.post(facebookConversationId.getId()+"/messages", fields);
     }
 
     public void addNewPost(String pageId, String content) {

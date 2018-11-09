@@ -7,16 +7,16 @@ import org.springframework.web.bind.annotation.*;
 import ovh.spajste.langusta.GenericStatus;
 import ovh.spajste.langusta.SessionBuilder;
 import ovh.spajste.langusta.entity.Session;
-import ovh.spajste.langusta.facebook.entity.FacebookAccessToken;
-import ovh.spajste.langusta.facebook.entity.FacebookBasicPageInfo;
-import ovh.spajste.langusta.facebook.entity.FacebookPageQueryResponse;
-import ovh.spajste.langusta.facebook.entity.FacebookPost;
+import ovh.spajste.langusta.facebook.entity.*;
 import ovh.spajste.langusta.facebook.repository.FacebookAccessTokenRepository;
+import ovh.spajste.langusta.facebook.repository.FacebookPostLogEntryRepository;
 import ovh.spajste.langusta.facebook.service.FacebookService;
+import ovh.spajste.langusta.repository.SessionRepository;
 import ovh.spajste.langusta.repository.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -27,10 +27,13 @@ public class FacebookPageController {
     private String langustaHmacSecret;
 
     @Autowired
-    private UserRepository userRepository;
+    private SessionRepository sessionRepository;
 
     @Autowired
     private FacebookAccessTokenRepository facebookAccessTokenRepository;
+
+    @Autowired
+    private FacebookPostLogEntryRepository facebookPostLogEntryRepository;
 
     @Autowired
     private FacebookService facebookService;
@@ -39,7 +42,7 @@ public class FacebookPageController {
     @GetMapping("/facebook/page/all")
     public GenericStatus getAllPages(HttpServletRequest httpServletRequest) {
         try {
-            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, userRepository, httpServletRequest);
+            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, sessionRepository, httpServletRequest);
             List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
             if(facebookAccessTokens.size() > 0) {
                 facebookService.setAccessToken(facebookAccessTokens.get(0).getAccessToken());
@@ -62,23 +65,30 @@ public class FacebookPageController {
     @PostMapping(path = "/facebook/page/{id}/post", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public GenericStatus addNewPostJson(@PathVariable("id") String id, @RequestBody FacebookPost content, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
-            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, userRepository, httpServletRequest);
+            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, sessionRepository, httpServletRequest);
             List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
             if(facebookAccessTokens.size() > 0) {
                 facebookService.setAccessToken(facebookAccessTokens.get(0).getAccessToken());
                 FacebookPageQueryResponse facebookPageQueryResponse = facebookService.getAllPages();
                 for(FacebookBasicPageInfo facebookBasicPageInfo: facebookPageQueryResponse.getAccounts().getData()) {
                     if(id.equals(facebookBasicPageInfo.getId())) {
+                        String contentString = content.getContent();
+                        if(contentString.length() > 30) contentString = contentString.substring(0,30);
                         facebookService.addNewPost(id, content.getContent());
+                        FacebookPostLogEntry facebookPostLogEntry = new FacebookPostLogEntry(null, id, contentString, new Date(), session);
+                        facebookPostLogEntryRepository.save(facebookPostLogEntry);
                         httpServletResponse.setStatus(201);
                         return GenericStatus.createSuccessfulStatus(null);
                     }
                 }
+                httpServletResponse.setStatus(404);
                 return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "Facebook page not found!", null);
             } else {
+                httpServletResponse.setStatus(400);
                 throw new NoSuchElementException("No Facebook access tokens found!");
             }
         } catch (Exception e) {
+            httpServletResponse.setStatus(500);
             return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, e.getMessage(), e);
         }
     }

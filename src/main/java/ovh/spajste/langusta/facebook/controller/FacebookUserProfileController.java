@@ -11,6 +11,7 @@ import ovh.spajste.langusta.facebook.entity.FacebookAccessToken;
 import ovh.spajste.langusta.facebook.entity.FacebookProfile;
 import ovh.spajste.langusta.facebook.repository.FacebookAccessTokenRepository;
 import ovh.spajste.langusta.facebook.service.FacebookService;
+import ovh.spajste.langusta.repository.SessionRepository;
 import ovh.spajste.langusta.repository.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +32,7 @@ public class FacebookUserProfileController {
     private String langustaHmacSecret;
 
     @Autowired
-    private UserRepository userRepository;
+    private SessionRepository sessionRepository;
 
 
     @GetMapping("/facebook/profile/{id}")
@@ -43,7 +44,7 @@ public class FacebookUserProfileController {
     @GetMapping("/facebook/profile/me")
     public GenericStatus getMineFacebookProfile(HttpServletRequest httpServletRequest) {
         try {
-            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, userRepository, httpServletRequest);
+            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, sessionRepository, httpServletRequest);
             List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
             if(facebookAccessTokens != null) {
                 FacebookAccessToken facebookAccessToken = facebookAccessTokens.get(0);

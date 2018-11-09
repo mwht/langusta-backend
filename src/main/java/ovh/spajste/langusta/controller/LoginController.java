@@ -40,17 +40,22 @@ public class LoginController {
                 try {
                     User userToAuth = userRepository.findByEmail(formData.get("username").get(0)).get(0);
                     if(BCrypt.checkpw(formData.get("password").get(0), userToAuth.getPass())) {
-                        String trackingId = Session.getNewToken();
-                        String ipAddress = httpServletRequest.getHeader("X-Forwarded-For");
-                        if(ipAddress == null) httpServletRequest.getRemoteAddr();
+                        if(userToAuth.getActive()) {
+                            String trackingId = Session.getNewToken();
+                            String ipAddress = httpServletRequest.getHeader("X-Forwarded-For");
+                            if (ipAddress == null) httpServletRequest.getRemoteAddr();
 
-                        String userAgent = httpServletRequest.getHeader("User-Agent");
-                        if(userAgent == null) userAgent = "";
+                            String userAgent = httpServletRequest.getHeader("User-Agent");
+                            if (userAgent == null) userAgent = "";
 
-                        Session validSession = new Session(null, trackingId, userToAuth, new Date(), ipAddress, userAgent);
-                        String token = JWT.create().withIssuer("SpajsTech Inc.").withIssuedAt(new Date()).withClaim("id", validSession.getUser().getId()).withClaim("trackingId", validSession.getTrackingId()).withExpiresAt(validSession.getExpiryDate()).sign(Algorithm.HMAC512(langustaHmacSecret));
-                        sessionRepository.save(validSession);
-                        return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, userToAuth.getId(), token);
+                            Session validSession = new Session(null, trackingId, userToAuth, new Date(), ipAddress, userAgent);
+                            String token = JWT.create().withIssuer("SpajsTech Inc.").withIssuedAt(new Date()).withClaim("id", validSession.getUser().getId()).withClaim("trackingId", validSession.getTrackingId()).withExpiresAt(validSession.getExpiryDate()).sign(Algorithm.HMAC512(langustaHmacSecret));
+                            sessionRepository.save(validSession);
+                            return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, userToAuth.getId(), token);
+                        } else {
+                            httpServletResponse.setStatus(401);
+                            return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -5, null);
+                        }
                     } else {
                         httpServletResponse.setStatus(401);
                         return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -1, null);
@@ -77,16 +82,21 @@ public class LoginController {
             List<User> userToAuthHandle = userRepository.findByEmail(loginParameters.getUsername());
             User userToAuth = userToAuthHandle.get(0);
             if(BCrypt.checkpw(loginParameters.getPassword(), userToAuth.getPass())) {
-                String sessionToken = Session.getNewToken();
-                String ipAddress = httpServletRequest.getHeader("X-Forwarded-For");
-                if(ipAddress == null) httpServletRequest.getRemoteAddr();
+                if(userToAuth.getActive()) {
+                    String sessionToken = Session.getNewToken();
+                    String ipAddress = httpServletRequest.getHeader("X-Forwarded-For");
+                    if (ipAddress == null) httpServletRequest.getRemoteAddr();
 
-                String userAgent = httpServletRequest.getHeader("User-Agent");
-                if(userAgent == null) userAgent = "";
-                Session validSession = new Session(null,sessionToken,userToAuth,new Date(),ipAddress,userAgent);
-                String token = JWT.create().withIssuer("SpajsTech Inc.").withIssuedAt(new Date()).withClaim("id", validSession.getUser().getId()).withClaim("trackingId", validSession.getTrackingId()).withExpiresAt(validSession.getExpiryDate()).sign(Algorithm.HMAC512(langustaHmacSecret));
-                sessionRepository.save(validSession);
-                return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, userToAuth.getId(), token);
+                    String userAgent = httpServletRequest.getHeader("User-Agent");
+                    if (userAgent == null) userAgent = "";
+                    Session validSession = new Session(null, sessionToken, userToAuth, new Date(), ipAddress, userAgent);
+                    String token = JWT.create().withIssuer("SpajsTech Inc.").withIssuedAt(new Date()).withClaim("id", validSession.getUser().getId()).withClaim("trackingId", validSession.getTrackingId()).withExpiresAt(validSession.getExpiryDate()).sign(Algorithm.HMAC512(langustaHmacSecret));
+                    sessionRepository.save(validSession);
+                    return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_SUCCESS, userToAuth.getId(), token);
+                } else {
+                    httpServletResponse.setStatus(401);
+                    return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -5, null);
+                }
             } else {
                 httpServletResponse.setStatus(401);
                 return new LoginStatus(LoginStatus.LoginState.LOGIN_STATE_FAILED, -1, null);
