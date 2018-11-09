@@ -15,6 +15,7 @@ import ovh.spajste.langusta.repository.SessionRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 
 @RestController
 public class ContestController {
@@ -49,7 +50,8 @@ public class ContestController {
                     null,
                     null,
                     0,
-                    null
+                    null,
+                    new Date(new Date().getTime() + 120000)
             );
             contestRepository.save(contest);
             httpServletResponse.setStatus(201);
