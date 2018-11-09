@@ -36,21 +36,25 @@ public class ContestController {
 
     @PostMapping(path = "/contest", consumes = {MediaType.APPLICATION_JSON_VALUE})
     public GenericStatus addNewContest(@RequestBody ContestParameters contestParameters, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, sessionRepository, httpServletRequest);
-        Contest contest = new Contest(
-                null,
-                session.getUser(),
-                contestParameters.getTitle(),
-                platformRepository.findPlatformByCanonicalName(contestParameters.getPlatform()).get(),
-                contestParameters.getPostLink(),
-                null,
-                null,
-                0,
-                null
-        );
-        contestRepository.save(contest);
-        httpServletResponse.setStatus(201);
-        return GenericStatus.createSuccessfulStatus(null);
+        try {
+            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, sessionRepository, httpServletRequest);
+            Contest contest = new Contest(
+                    null,
+                    session.getUser(),
+                    contestParameters.getTitle(),
+                    platformRepository.findPlatformByCanonicalName(contestParameters.getPlatform()).get(),
+                    contestParameters.getPostLink(),
+                    null,
+                    null,
+                    0,
+                    null
+            );
+            contestRepository.save(contest);
+            httpServletResponse.setStatus(201);
+            return GenericStatus.createSuccessfulStatus(null);
+        } catch (Exception e) {
+            return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, e.getMessage(), e);
+        }
     }
 
     @GetMapping("/contest/all")
