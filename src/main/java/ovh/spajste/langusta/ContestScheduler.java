@@ -23,8 +23,10 @@ public class ContestScheduler {
         /* TODO: optimize SQL query or add method in ContestRepository interface */
 
         for(Contest contest: contestRepository.findAll()) {
-            if(contest.getEndDate().after(new Date())) {
+            if(contest.getEndDate().before(new Date()) && !contest.getEndNotificationSent()) { // end date before current date <=> current date after end
                 mailService.sendMail(contest.getUser().getEmail(),"Contest ended successfully", "Hello,\n\nContest \""+contest.getTitle()+"\" has ended at "+contest.getEndDate()+".\nThe winner is [TODO]\n\nLangusta system");
+                contest.setEndNotificationSent(true);
+                contestRepository.save(contest);
             }
         }
     }
