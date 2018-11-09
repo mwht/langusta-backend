@@ -24,12 +24,13 @@ public class Contest {
     private Integer likesAmount;
     private String winnerId; // FB/YT id
     private Date endDate;
+    private Boolean endNotificationSent;
 
     public Contest() {
-        this(null,null,null,null,null,null,null,null,null,null);
+        this(null,null,null,null,null,null,null,null,null,null, null);
     }
 
-    public Contest(Integer id, User user, String title, Platform platform, String postLink, String topComments, Integer topCommLikes, Integer likesAmount, String winnerId, Date endDate) {
+    public Contest(Integer id, User user, String title, Platform platform, String postLink, String topComments, Integer topCommLikes, Integer likesAmount, String winnerId, Date endDate, Boolean endNotificationSent) {
         this.id = id;
         this.user = user;
         this.title = title;
@@ -40,6 +41,7 @@ public class Contest {
         this.likesAmount = likesAmount;
         this.winnerId = winnerId;
         this.endDate = endDate;
+        this.endNotificationSent = endNotificationSent;
     }
 
     public Integer getId() {
@@ -120,5 +122,13 @@ public class Contest {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public Boolean getEndNotificationSent() {
+        return endNotificationSent;
+    }
+
+    public void setEndNotificationSent(Boolean endNotificationSent) {
+        this.endNotificationSent = endNotificationSent;
     }
 }
