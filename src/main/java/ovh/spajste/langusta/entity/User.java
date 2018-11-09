@@ -1,8 +1,11 @@
 package ovh.spajste.langusta.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 
 @Entity
+@JsonIgnoreProperties({"pass"})
 public class User {
 
     @Id
