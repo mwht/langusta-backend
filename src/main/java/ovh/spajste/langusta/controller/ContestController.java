@@ -51,7 +51,8 @@ public class ContestController {
                     0,
                     0,
                     null,
-                    new Date(new Date().getTime() + 120000)
+                    new Date(new Date().getTime() + 120000),
+                    false
             );
             contestRepository.save(contest);
             httpServletResponse.setStatus(201);
