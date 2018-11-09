@@ -55,6 +55,7 @@ public class ContestController {
             httpServletResponse.setStatus(201);
             return GenericStatus.createSuccessfulStatus(null);
         } catch (Exception e) {
+            httpServletResponse.setStatus(500);
             return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, e.getMessage(), e);
         }
     }
