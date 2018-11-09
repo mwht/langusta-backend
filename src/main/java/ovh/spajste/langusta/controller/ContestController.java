@@ -64,7 +64,6 @@ public class ContestController {
 
     @GetMapping("/contest/all")
     public GenericStatus getAllContests() {
-        /* TODO: probably security! */
         return GenericStatus.createSuccessfulStatus(contestRepository.findAll());
     }
 
