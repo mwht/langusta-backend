@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.*;
 
 @Entity
-@JsonIgnoreProperties({"pass"})
+@JsonIgnoreProperties({"pass","activationCode"})
 public class User {
 
     @Id
