@@ -27,8 +27,12 @@ public class SessionBuilder {
     @Autowired
     SessionRepository sessionRepository;
 
-    @Value("${langusta.hmac-secret}")
-    private String langustaHmacSecret;
+    private final String langustaHmacSecret;
+
+    @Autowired
+    public SessionBuilder(@Value("${langusta.hmac-secret}") String langustaHmacSecret) {
+        this.langustaHmacSecret = langustaHmacSecret;
+    }
 
     public Session getCurrentSession(HttpServletRequest httpServletRequest) {
         String jwtToken= null;
