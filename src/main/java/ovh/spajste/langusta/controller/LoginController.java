@@ -28,8 +28,8 @@ public class LoginController {
     @Autowired
     SessionRepository sessionRepository;
 
-    @Value("${langusta.hmac-secret}")
-    private String langustaHmacSecret;
+    @Value("${langusta.hmac-secret")
+    String langustaHmacSecret;
 
     @CrossOrigin(origins = "*")
     @RequestMapping(value="/login", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})

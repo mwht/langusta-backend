@@ -21,11 +21,8 @@ import java.util.NoSuchElementException;
 @RestController
 public class FacebookMessageController {
 
-    @Value("${langusta.hmac-secret}")
-    private String langustaHmacSecret;
-
     @Autowired
-    private SessionRepository sessionRepository;
+    private SessionBuilder sessionBuilder;
 
     @Autowired
     private FacebookAccessTokenRepository facebookAccessTokenRepository;
@@ -41,7 +38,7 @@ public class FacebookMessageController {
     @PostMapping(path = "/facebook/page/{id}/conversations/all/send", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public GenericStatus pageConversationSendJson(@PathVariable("id") String id, @RequestBody FacebookPost content, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
-            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, sessionRepository, httpServletRequest);
+            Session session = sessionBuilder.getCurrentSession(httpServletRequest);
             List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
             if(facebookAccessTokens.size() > 0) {
                 FacebookAccessToken facebookAccessToken = facebookAccessTokens.get(0);
@@ -68,7 +65,7 @@ public class FacebookMessageController {
     @GetMapping("/facebook/page/{id}/conversations")
     public GenericStatus getAllConversationsFromPage(@PathVariable String id, HttpServletRequest httpServletRequest) {
         try {
-            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, sessionRepository, httpServletRequest);
+            Session session = sessionBuilder.getCurrentSession(httpServletRequest);
             List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
             if(facebookAccessTokens.size() > 0) {
                 FacebookAccessToken facebookAccessToken = facebookAccessTokens.get(0);

@@ -16,6 +16,8 @@ import ovh.spajste.langusta.repository.SessionRepository;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @RestController
 public class ContestController {
@@ -27,10 +29,8 @@ public class ContestController {
     private PlatformRepository platformRepository;
 
     @Autowired
-    private SessionRepository sessionRepository;
+    private SessionBuilder sessionBuilder;
 
-    @Value("${langusta.hmac-secret}")
-    private String langustaHmacSecret;
 
     @PostMapping(path = "/contest", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public GenericStatus addNewContest(@RequestParam String title, @RequestParam String platform, @RequestParam("post_link") String postLink, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
@@ -40,7 +40,7 @@ public class ContestController {
     @PostMapping(path = "/contest", consumes = {MediaType.APPLICATION_JSON_VALUE})
     public GenericStatus addNewContestJson(@RequestBody ContestParameters contestParameters, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
-            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, sessionRepository, httpServletRequest);
+            Session session = sessionBuilder.getCurrentSession(httpServletRequest);
             Contest contest = new Contest(
                     null,
                     session.getUser(),
@@ -59,6 +59,22 @@ public class ContestController {
             return GenericStatus.createSuccessfulStatus(null);
         } catch (Exception e) {
             httpServletResponse.setStatus(500);
+            return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, e.getMessage(), e);
+        }
+    }
+
+    @GetMapping("/contest/{id}/results")
+    public GenericStatus getContestResults(@PathVariable("id") Integer id, HttpServletRequest httpServletRequest) {
+        try {
+            Session session = sessionBuilder.getCurrentSession(httpServletRequest);
+            Optional<Contest> contestHandle = contestRepository.findById(id);
+            if(contestHandle.isPresent()) {
+                Contest contest = contestHandle.get();
+            } else {
+                throw new NoSuchElementException("Contest not found.");
+            }
+            return GenericStatus.createSuccessfulStatus(null);
+        } catch (Exception e) {
             return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, e.getMessage(), e);
         }
     }

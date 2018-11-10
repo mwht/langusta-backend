@@ -6,6 +6,9 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import ovh.spajste.langusta.entity.Session;
 import ovh.spajste.langusta.entity.User;
 import ovh.spajste.langusta.repository.SessionRepository;
@@ -17,9 +20,16 @@ import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Component
 public class SessionBuilder {
 
-    public static Session getCurrentSession(String secret, SessionRepository sessionRepository, HttpServletRequest httpServletRequest) {
+    @Autowired
+    SessionRepository sessionRepository;
+
+    @Value("${langusta.hmac-secret}")
+    private String langustaHmacSecret;
+
+    public Session getCurrentSession(HttpServletRequest httpServletRequest) {
         String jwtToken= null;
         if(httpServletRequest.getHeader("X-Auth-Token") != null) {
             jwtToken = httpServletRequest.getHeader("X-Auth-Token");
@@ -39,11 +49,11 @@ public class SessionBuilder {
             }
         }
 
-        Session resultSession = buildFromJWT(jwtToken, secret, sessionRepository);
+        Session resultSession = buildFromJWT(jwtToken, langustaHmacSecret, sessionRepository);
         return resultSession;
     }
 
-    public static Session buildFromJWT(String token, String secret, SessionRepository sessionRepository) {
+    public Session buildFromJWT(String token, String secret, SessionRepository sessionRepository) {
         try {
             JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC512(secret))
                                          .withIssuer("SpajsTech Inc.")

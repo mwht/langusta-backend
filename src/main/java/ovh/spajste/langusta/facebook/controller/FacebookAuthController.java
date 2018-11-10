@@ -38,6 +38,9 @@ public class FacebookAuthController {
     @Value("${langusta.hmac-secret}")
     private String langustaHmacSecret;
 
+    @Autowired
+    private SessionBuilder sessionBuilder;
+
     @CrossOrigin(origins = "*")
     @GetMapping("/facebook/authSuccess")
     public GenericStatus onFacebookAuthSuccess(@RequestParam("code") String code, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
@@ -73,7 +76,7 @@ public class FacebookAuthController {
     @GetMapping("/facebook/tokens")
     public GenericStatus getUserTokens(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
-            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, sessionRepository, httpServletRequest);
+            Session session = sessionBuilder.getCurrentSession(httpServletRequest);
             List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
             if(facebookAccessTokens != null) {
                 List<BasicFacebookAccessTokenDataView> basicFacebookAccessTokenDataViews = new ArrayList<>();
@@ -94,7 +97,7 @@ public class FacebookAuthController {
         try {
             /*if (httpServletRequest.getHeader("X-Auth-Token") == null)
                 throw new java.lang.IllegalAccessException("No Langusta auth token provided.");*/
-            Session session = SessionBuilder.buildFromJWT(authToken, langustaHmacSecret, sessionRepository);
+            Session session = sessionBuilder.buildFromJWT(authToken, langustaHmacSecret, sessionRepository);
             httpServletResponse.setStatus(301);
             httpServletResponse.addHeader("Set-Cookie", "fbauth="+session.getTrackingId()+"; path=/api");
             httpServletResponse.addHeader("Location", facebookService.createFacebookAuthorizationURL());

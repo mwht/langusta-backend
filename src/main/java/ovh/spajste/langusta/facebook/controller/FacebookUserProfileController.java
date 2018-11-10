@@ -28,11 +28,8 @@ public class FacebookUserProfileController {
     @Autowired
     private FacebookService facebookService;
 
-    @Value("${langusta.hmac-secret}")
-    private String langustaHmacSecret;
-
     @Autowired
-    private SessionRepository sessionRepository;
+    private SessionBuilder sessionBuilder;
 
 
     @GetMapping("/facebook/profile/{id}")
@@ -44,7 +41,7 @@ public class FacebookUserProfileController {
     @GetMapping("/facebook/profile/me")
     public GenericStatus getMineFacebookProfile(HttpServletRequest httpServletRequest) {
         try {
-            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, sessionRepository, httpServletRequest);
+            Session session = sessionBuilder.getCurrentSession(httpServletRequest);
             List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
             if(facebookAccessTokens != null) {
                 FacebookAccessToken facebookAccessToken = facebookAccessTokens.get(0);

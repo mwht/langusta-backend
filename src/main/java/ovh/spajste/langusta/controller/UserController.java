@@ -24,10 +24,7 @@ public class UserController {
     private UserRepository userRepository;
 
     @Autowired
-    private SessionRepository sessionRepository;
-
-    @Value("${langusta.hmac-secret}")
-    private String langustaHmacSecret;
+    private SessionBuilder sessionBuilder;
 
     @Autowired
     private MailService mailService;
@@ -36,7 +33,7 @@ public class UserController {
     @GetMapping("/user/me")
     public GenericStatus getLoggedInUser(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
-            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, sessionRepository, httpServletRequest);
+            Session session = sessionBuilder.getCurrentSession(httpServletRequest);
             if (session != null) {
                 try {
                     return GenericStatus.createSuccessfulStatus(session.getUser());
