@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.hibernate.validator.internal.util.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,9 +15,11 @@ import ovh.spajste.langusta.entity.User;
 import ovh.spajste.langusta.repository.SessionRepository;
 import ovh.spajste.langusta.repository.UserRepository;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.NoSuchElementException;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,11 +29,15 @@ public class SessionBuilder {
     @Autowired
     SessionRepository sessionRepository;
 
-    private final String langustaHmacSecret;
+    @Value("${langusta.hmac-secret}")
+    private String langustaHmacSecret;
 
-    @Autowired
-    public SessionBuilder(@Value("${langusta.hmac-secret}") String langustaHmacSecret) {
-        this.langustaHmacSecret = langustaHmacSecret;
+    public SessionBuilder() {
+    }
+
+    @PostConstruct
+    public void init() {
+        System.out.println("================== " + langustaHmacSecret + "================== ");
     }
 
     public Session getCurrentSession(HttpServletRequest httpServletRequest) {
@@ -52,6 +59,8 @@ public class SessionBuilder {
                 throw new SecurityException("No valid Langusta token supplied!");
             }
         }
+
+        Logger.getAnonymousLogger().info("!!! HMAC: " + langustaHmacSecret);
 
         Session resultSession = buildFromJWT(jwtToken, langustaHmacSecret, sessionRepository);
         return resultSession;
