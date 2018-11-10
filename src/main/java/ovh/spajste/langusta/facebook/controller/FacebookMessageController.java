@@ -49,7 +49,12 @@ public class FacebookMessageController {
                         String pageAccessToken = facebookBasicPageInfo.getAccessToken();
                         facebookService.setAccessToken(pageAccessToken);
                         for(FacebookConversationId facebookConversationId: facebookService.getIdsForAllConversations().getConversations().getData()) {
-                            facebookService.sendMessage(facebookConversationId, content.getContent());
+                            try {
+                                facebookService.sendMessage(facebookConversationId, content.getContent());
+                            } catch(Exception e) {
+                                /* TODO: report errors to client */
+                                e.printStackTrace();
+                            }
                         }
                     }   httpServletResponse.setStatus(202);
                 }
