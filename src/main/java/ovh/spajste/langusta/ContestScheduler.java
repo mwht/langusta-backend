@@ -28,6 +28,10 @@ public class ContestScheduler {
                 contest.setEndNotificationSent(true);
                 contestRepository.save(contest);
             }
+            if(contest.getEndDate().after(new Date())) {
+                ContestHandler contestHandler = ContestHandlerFactory.getInstance(contest.getPlatform().getCanonicalName());
+                contestHandler.doContest(contest);
+            }
         }
     }
 }
