@@ -14,6 +14,7 @@ import ovh.spajste.langusta.entity.User;
 import ovh.spajste.langusta.repository.SessionRepository;
 import ovh.spajste.langusta.repository.UserRepository;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.NoSuchElementException;
@@ -53,6 +54,7 @@ public class SessionBuilder {
         return resultSession;
     }
 
+    @PostConstruct
     public Session buildFromJWT(String token, String secret, SessionRepository sessionRepository) {
         try {
             JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC512(secret))
