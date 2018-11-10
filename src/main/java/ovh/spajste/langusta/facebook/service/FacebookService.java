@@ -67,6 +67,12 @@ public class FacebookService {
         return facebook.fetchObject("me", FacebookConversationsQueryResponse.class, fields);
     }
 
+    public FacebookPostComments getFacebookPostComments(String pageId, String postId) {
+        Facebook facebook = new FacebookTemplate(accessToken);
+        String[] fields = {"comments{from,message,created_time,likes.summary(true)}"};
+        return facebook.fetchObject(pageId+"_"+postId, FacebookPostComments.class, fields);
+    }
+
     public void sendMessage(FacebookConversationId facebookConversationId, String content) {
         Facebook facebook = new FacebookTemplate(accessToken);
         MultiValueMap<String, Object> fields = new LinkedMultiValueMap<>();
