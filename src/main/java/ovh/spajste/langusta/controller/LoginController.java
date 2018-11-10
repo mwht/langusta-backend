@@ -28,7 +28,7 @@ public class LoginController {
     @Autowired
     SessionRepository sessionRepository;
 
-    @Value("${langusta.hmac-secret")
+    @Value("${langusta.hmac-secret}")
     String langustaHmacSecret;
 
     @CrossOrigin(origins = "*")
