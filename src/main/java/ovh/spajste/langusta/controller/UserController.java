@@ -83,6 +83,7 @@ public class UserController {
                 httpServletResponse.setStatus(406);
                 return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "User already exists.", null);
             } else {
+                user.setId(null);
                 user.setPass(BCrypt.hashpw(user.getPass(), BCrypt.gensalt()));
                 user.setActivationCode(UUID.randomUUID().toString());
                 userRepository.save(user);
