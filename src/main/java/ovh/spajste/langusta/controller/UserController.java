@@ -49,7 +49,8 @@ public class UserController {
                 return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "Not logged in.", null);
             }
         } catch (Exception e) {
-            return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "Not logged in.", e);
+            httpServletResponse.setStatus(500);
+            return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, e.getMessage(), e);
         }
     }
 
