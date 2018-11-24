@@ -1,7 +1,9 @@
 package ovh.spajste.langusta.facebook;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import ovh.spajste.langusta.ContestHandler;
+import ovh.spajste.langusta.SpringContext;
 import ovh.spajste.langusta.entity.Contest;
 import ovh.spajste.langusta.facebook.entity.FacebookBasicPageInfo;
 import ovh.spajste.langusta.facebook.entity.FacebookPostReactions;
@@ -16,14 +18,14 @@ import java.util.regex.Pattern;
 public class FacebookContestHandler implements ContestHandler {
 
     @Autowired
-    private FacebookService facebookService;
-
-    @Autowired
     private FacebookAccessTokenRepository facebookAccessTokenRepository;
 
     @Override
     public Contest fetchNewContestData(Contest contest) {
         // https://www.facebook.com/[page name]/posts/[post id]
+        // PostLink IS NOW POST ID FETCHED DIRECTLY FROM FACEBOOK !!!
+        ApplicationContext applicationContext = SpringContext.getApplicationContext();
+        FacebookService facebookService = (FacebookService) applicationContext.getBean("facebookService");
         facebookService.setAccessToken(facebookAccessTokenRepository.findByUserId(contest.getUser().getId()).get(0).getAccessToken());
         Pattern regex = Pattern.compile("^(\\d+)_");
         String pageId = null;
@@ -46,6 +48,9 @@ public class FacebookContestHandler implements ContestHandler {
     }
 
     public Contest doContest(Contest contest) {
+
+        ApplicationContext applicationContext = SpringContext.getApplicationContext();
+        FacebookService facebookService = (FacebookService) applicationContext.getBean("facebookService");
 
         facebookService.setAccessToken(facebookAccessTokenRepository.findByUserId(contest.getUser().getId()).get(0).getAccessToken());
         Pattern regex = Pattern.compile("^(\\d+)_");
