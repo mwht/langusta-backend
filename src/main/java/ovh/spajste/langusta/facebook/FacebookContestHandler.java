@@ -73,7 +73,10 @@ public class FacebookContestHandler implements ContestHandler {
                 try {
                     while (regexMatcher.find()) {
                         pageId = regexMatcher.group(1);
-                        facebookService.setAccessToken(facebookBasicPageInfo.getAccessToken());
+                        if(contest.getPostLink().startsWith(pageId)) {
+                            facebookService.setAccessToken(facebookBasicPageInfo.getAccessToken());
+                            break;
+                        }
                     }
                 } catch (NullPointerException npe) {
                     throw new IllegalArgumentException("No facebook page access token supplied!");
