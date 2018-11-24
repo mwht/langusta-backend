@@ -3,7 +3,9 @@ package ovh.spajste.langusta.facebook;
 import org.springframework.beans.factory.annotation.Autowired;
 import ovh.spajste.langusta.ContestHandler;
 import ovh.spajste.langusta.entity.Contest;
+import ovh.spajste.langusta.facebook.entity.FacebookBasicPageInfo;
 import ovh.spajste.langusta.facebook.entity.FacebookPostReactions;
+import ovh.spajste.langusta.facebook.repository.FacebookAccessTokenRepository;
 import ovh.spajste.langusta.facebook.service.FacebookService;
 
 import java.util.Random;
@@ -16,15 +18,51 @@ public class FacebookContestHandler implements ContestHandler {
     @Autowired
     private FacebookService facebookService;
 
+    @Autowired
+    private FacebookAccessTokenRepository facebookAccessTokenRepository;
+
     @Override
     public Contest fetchNewContestData(Contest contest) {
         // https://www.facebook.com/[page name]/posts/[post id]
+        facebookService.setAccessToken(facebookAccessTokenRepository.findByUserId(contest.getUser().getId()).get(0).getAccessToken());
+        Pattern regex = Pattern.compile("^(\\d+)_");
+        String pageId = null;
+
+        for(FacebookBasicPageInfo facebookBasicPageInfo: facebookService.getAllPages().getAccounts().getData()) {
+            Matcher regexMatcher = regex.matcher(contest.getPostLink());
+            try {
+                while (regexMatcher.find()) {
+                    pageId = regexMatcher.group(1);
+                    facebookService.setAccessToken(facebookBasicPageInfo.getAccessToken());
+                }
+            } catch (NullPointerException npe) {
+                throw new IllegalArgumentException("No facebook page access token supplied!");
+            }
+        }
+
         FacebookPostReactions facebookPostReactions = facebookService.getFacebookPostAndReactions(contest.getPostLink());
         Logger.getAnonymousLogger().info("FB contest handler - contest link "+contest.getPostLink()+", "+facebookPostReactions.getReactions().getData().size()+" reactions");
         return contest;
     }
 
     public Contest doContest(Contest contest) {
+
+        facebookService.setAccessToken(facebookAccessTokenRepository.findByUserId(contest.getUser().getId()).get(0).getAccessToken());
+        Pattern regex = Pattern.compile("^(\\d+)_");
+        String pageId = null;
+
+        for(FacebookBasicPageInfo facebookBasicPageInfo: facebookService.getAllPages().getAccounts().getData()) {
+            Matcher regexMatcher = regex.matcher(contest.getPostLink());
+            try {
+                while (regexMatcher.find()) {
+                    pageId = regexMatcher.group(1);
+                    facebookService.setAccessToken(facebookBasicPageInfo.getAccessToken());
+                }
+            } catch (NullPointerException npe) {
+                throw new IllegalArgumentException("No facebook page access token supplied!");
+            }
+        }
+
         Random random = new Random();
         FacebookPostReactions facebookPostReactions = facebookService.getFacebookPostAndReactions(contest.getPostLink());
         int winner = random.nextInt(facebookPostReactions.getReactions().getData().size());
