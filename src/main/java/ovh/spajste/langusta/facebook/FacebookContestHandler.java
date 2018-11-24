@@ -22,12 +22,15 @@ public class FacebookContestHandler implements ContestHandler {
         // https://www.facebook.com/[page name]/posts/[post id]
         // PostLink IS NOW POST ID FETCHED DIRECTLY FROM FACEBOOK !!!
         try {
+            // get all required components
             ApplicationContext applicationContext = SpringContext.getApplicationContext();
             FacebookService facebookService = (FacebookService) applicationContext.getBean("facebookService");
             FacebookAccessTokenRepository facebookAccessTokenRepository = (FacebookAccessTokenRepository) applicationContext.getBean("facebookAccessTokenRepository");
+            // set access token
             facebookService.setAccessToken(
                     facebookAccessTokenRepository.findByUserId(contest.getUser().getId()).get(0).getAccessToken()
             );
+            // compile regex for page id
             Pattern regex = Pattern.compile("^(\\d+)_");
             String pageId = null;
 
@@ -36,7 +39,9 @@ public class FacebookContestHandler implements ContestHandler {
                 try {
                     while (regexMatcher.find()) {
                         pageId = regexMatcher.group(1);
+                        Logger.getAnonymousLogger().info("FacebookContestHandler: Setting access token to " + facebookBasicPageInfo.getName());
                         facebookService.setAccessToken(facebookBasicPageInfo.getAccessToken());
+                        break;
                     }
                 } catch (NullPointerException npe) {
                     throw new IllegalArgumentException("No facebook page access token supplied!");
@@ -45,11 +50,12 @@ public class FacebookContestHandler implements ContestHandler {
 
             FacebookPostReactions facebookPostReactions = facebookService.getFacebookPostAndReactions(contest.getPostLink());
             Logger.getAnonymousLogger().info("FB contest handler - contest link " + contest.getPostLink() + ", " + facebookPostReactions.getReactions().getData().size() + " reactions");
+            contest.setLikesAmount(facebookPostReactions.getReactions().getData().size());
             return contest;
         } catch (Exception e) {
             Logger.getAnonymousLogger().severe("Can't fetch data for contest (\"" + contest.getTitle() + "\"): " + e.getClass().getSimpleName() + ": " + e.getMessage());
             e.printStackTrace();
-            return contest;
+            return null;
         }
     }
 
