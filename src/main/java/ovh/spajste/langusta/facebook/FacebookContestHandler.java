@@ -17,16 +17,14 @@ import java.util.regex.Pattern;
 
 public class FacebookContestHandler implements ContestHandler {
 
-    @Autowired
-    private FacebookAccessTokenRepository facebookAccessTokenRepository;
-
     @Override
     public Contest fetchNewContestData(Contest contest) {
         // https://www.facebook.com/[page name]/posts/[post id]
         // PostLink IS NOW POST ID FETCHED DIRECTLY FROM FACEBOOK !!!
         try {
             ApplicationContext applicationContext = SpringContext.getApplicationContext();
-            FacebookService facebookService = (FacebookService) applicationContext.getBeansOfType(FacebookService.class).get("facebookService");
+            FacebookService facebookService = (FacebookService) applicationContext.getBean("facebookService");
+            FacebookAccessTokenRepository facebookAccessTokenRepository = (FacebookAccessTokenRepository) applicationContext.getBean("facebookAccessTokenRepository");
             facebookService.setAccessToken(
                     facebookAccessTokenRepository.findByUserId(contest.getUser().getId()).get(0).getAccessToken()
             );
@@ -59,7 +57,7 @@ public class FacebookContestHandler implements ContestHandler {
         try {
             ApplicationContext applicationContext = SpringContext.getApplicationContext();
             FacebookService facebookService = (FacebookService) applicationContext.getBean("facebookService");
-
+            FacebookAccessTokenRepository facebookAccessTokenRepository = (FacebookAccessTokenRepository) applicationContext.getBean("facebookAccessTokenRepository");
             facebookService.setAccessToken(facebookAccessTokenRepository.findByUserId(contest.getUser().getId()).get(0).getAccessToken());
             Pattern regex = Pattern.compile("^(\\d+)_");
             String pageId = null;
