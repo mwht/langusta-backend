@@ -11,8 +11,8 @@ import java.util.regex.Pattern;
 
 public class FacebookContestHandler implements ContestHandler {
 
-    public void doContest(Contest contest) {
-
+    @Override
+    public Contest fetchNewContestData(Contest contest) {
         // https://www.facebook.com/[dont care]/posts/[post id]
         Pattern linkRegex = Pattern.compile("^https:\\/\\/www\\.facebook\\.com\\/(.*)\\/posts\\/(\\d+)");
         String postId = null;
@@ -24,6 +24,12 @@ public class FacebookContestHandler implements ContestHandler {
         } catch (NullPointerException npe) {
             throw new SecurityException("Unparsable Facebook object supplied!");
         }
-        Logger.getAnonymousLogger().info("FB contest handler - ! TODO ! (contest link "+postId+")");
+        Logger.getAnonymousLogger().info("FB contest handler - contest link "+postId+"");
+        return contest;
+    }
+
+    public Contest doContest(Contest contest) {
+        Logger.getAnonymousLogger().info("FB contest handler - contest ended, processing here");
+        return contest;
     }
 }
