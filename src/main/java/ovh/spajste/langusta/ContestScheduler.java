@@ -26,7 +26,8 @@ public class ContestScheduler {
             if(contest.getEndDate().before(new Date()) && !contest.getEndNotificationSent()) { // end date before current date <=> current date after end
                 ContestHandler contestHandler = ContestHandlerFactory.getInstance(contest.getPlatform().getCanonicalName());
                 contest = contestHandler.doContest(contest);
-                mailService.sendMail(contest.getUser().getEmail(),"Contest \""+contest.getTitle()+"\" ended successfully", "Hello,\n\nContest \""+contest.getTitle()+"\" has ended at "+contest.getEndDate()+".\nThe winner is [TODO]\n\nLangusta system");
+                mailService.sendMail(contest.getUser().getEmail(),"Contest \""+contest.getTitle()+"\" ended successfully", "Hello,\n\nContest \""+contest.getTitle()+"\" has ended at "+contest.getEndDate()+
+                        ".\nThe winner is "+contest.getWinnerDisplayName()+"\n\nLangusta system");
                 contest.setEndNotificationSent(true);
                 contestRepository.save(contest);
             }
