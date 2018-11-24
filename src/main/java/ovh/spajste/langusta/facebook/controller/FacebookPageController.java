@@ -64,7 +64,7 @@ public class FacebookPageController {
                 throw new NoSuchElementException("No Facebook access tokens found!");
             }
         } catch (Exception e) {
-
+            return GenericStatus.createFailedStatusWithAdditionalInfo(e.getMessage(), e);
         }
     }
 
