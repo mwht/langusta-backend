@@ -64,7 +64,7 @@ public class FacebookService {
 
     public FacebookPosts getPostsFromPage(String pageId) {
         Facebook facebook = new FacebookTemplate(accessToken);
-        return  facebook.fetchObject("me/posts", FacebookPosts.class);
+        return  facebook.fetchObject(pageId+"/posts", FacebookPosts.class);
     }
 
     public FacebookConversationsQueryResponse getIdsForAllConversations() {

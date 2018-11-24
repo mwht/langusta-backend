@@ -58,14 +58,25 @@ public class FacebookPageController {
             Session session = sessionBuilder.getCurrentSession(httpServletRequest);
             List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
             if(facebookAccessTokens.size() > 0) {
-                facebookService.setAccessToken(facebookAccessTokens.get(0).getAccessToken());
-                return GenericStatus.createSuccessfulStatus(facebookService.getPostsFromPage(id));
+                FacebookAccessToken facebookAccessToken = facebookAccessTokens.get(0);
+                facebookService.setAccessToken(facebookAccessToken.getAccessToken());
+                FacebookPageQueryResponse facebookBasicPageInfoFacebookResponse = facebookService.getAllPages();
+                for(FacebookBasicPageInfo facebookBasicPageInfo: facebookBasicPageInfoFacebookResponse.getAccounts().getData()) {
+                    if(id.equals(facebookBasicPageInfo.getId())) {
+                        String pageAccessToken = facebookBasicPageInfo.getAccessToken();
+                        facebookService.setAccessToken(pageAccessToken);
+                        return GenericStatus.createSuccessfulStatus(facebookService.getPostsFromPage(id));
+                    } else {
+                        return GenericStatus.createFailedStatusWithAdditionalInfo("No Facebook access tokens were found!", null);
+                    }
+                }
             } else {
                 throw new NoSuchElementException("No Facebook access tokens found!");
             }
         } catch (Exception e) {
             return GenericStatus.createFailedStatusWithAdditionalInfo(e.getMessage(), e);
         }
+        return GenericStatus.createFailedStatusWithAdditionalInfo("Unknown error!", null);
     }
 
     @CrossOrigin(origins = "*")
