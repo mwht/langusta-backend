@@ -60,6 +60,8 @@ public class FacebookPageController {
             if(facebookAccessTokens.size() > 0) {
                 FacebookAccessToken facebookAccessToken = facebookAccessTokens.get(0);
                 facebookService.setAccessToken(facebookAccessToken.getAccessToken());
+                return GenericStatus.createSuccessfulStatus(facebookService.getPostsFromPage(id));
+                /* // TODO: make this as default instead of code above
                 FacebookPageQueryResponse facebookBasicPageInfoFacebookResponse = facebookService.getAllPages();
                 for(FacebookBasicPageInfo facebookBasicPageInfo: facebookBasicPageInfoFacebookResponse.getAccounts().getData()) {
                     if(id.equals(facebookBasicPageInfo.getId())) {
@@ -70,6 +72,7 @@ public class FacebookPageController {
                         return GenericStatus.createFailedStatusWithAdditionalInfo("No Facebook access tokens were found!", null);
                     }
                 }
+                */
             } else {
                 throw new NoSuchElementException("No Facebook access tokens found!");
             }
