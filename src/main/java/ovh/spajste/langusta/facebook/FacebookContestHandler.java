@@ -3,33 +3,34 @@ package ovh.spajste.langusta.facebook;
 import org.springframework.beans.factory.annotation.Autowired;
 import ovh.spajste.langusta.ContestHandler;
 import ovh.spajste.langusta.entity.Contest;
+import ovh.spajste.langusta.facebook.entity.FacebookPostReactions;
 import ovh.spajste.langusta.facebook.service.FacebookService;
 
+import java.util.Random;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FacebookContestHandler implements ContestHandler {
 
+    @Autowired
+    private FacebookService facebookService;
+
     @Override
     public Contest fetchNewContestData(Contest contest) {
-        // https://www.facebook.com/[dont care]/posts/[post id]
-        Pattern linkRegex = Pattern.compile("^https:\\/\\/www\\.facebook\\.com\\/(.*)\\/posts\\/(\\d+)");
-        String postId = null;
-
-        Matcher regexMatcher = linkRegex.matcher(contest.getPostLink());
-        try {
-            while (regexMatcher.find())
-                postId = regexMatcher.group(2);
-        } catch (NullPointerException npe) {
-            throw new SecurityException("Unparsable Facebook object supplied!");
-        }
-        Logger.getAnonymousLogger().info("FB contest handler - contest link "+postId+"");
+        // https://www.facebook.com/[page name]/posts/[post id]
+        FacebookPostReactions facebookPostReactions = facebookService.getFacebookPostAndReactions(contest.getPostLink());
+        Logger.getAnonymousLogger().info("FB contest handler - contest link "+contest.getPostLink()+", "+facebookPostReactions.getReactions().getData().size()+" reactions");
         return contest;
     }
 
     public Contest doContest(Contest contest) {
-        Logger.getAnonymousLogger().info("FB contest handler - contest ended, processing here");
+        Random random = new Random();
+        FacebookPostReactions facebookPostReactions = facebookService.getFacebookPostAndReactions(contest.getPostLink());
+        int winner = random.nextInt(facebookPostReactions.getReactions().getData().size());
+        Logger.getAnonymousLogger().info("FB contest handler - contest ended, winner id = "+facebookPostReactions.getReactions().getData().get(winner).getId()
+                + ", winner name = " + facebookPostReactions.getReactions().getData().get(winner).getName());
+        contest.setWinnerId(facebookPostReactions.getReactions().getData().get(winner).getId());
         return contest;
     }
 }

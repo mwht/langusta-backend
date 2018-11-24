@@ -86,4 +86,10 @@ public class FacebookService {
         Facebook facebook = new FacebookTemplate(accessToken);
         facebook.pageOperations().post(new PagePostData(pageId).message(content));
     }
+
+    public FacebookPostReactions getFacebookPostAndReactions(String postId) {
+        Facebook facebook = new FacebookTemplate(accessToken);
+        String[] fields = {"caption","type","message","reactions"};
+        return facebook.fetchObject(postId, FacebookPostReactions.class, fields);
+    }
 }
