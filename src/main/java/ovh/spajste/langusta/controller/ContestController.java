@@ -64,17 +64,17 @@ public class ContestController {
         }
     }
 
-    @GetMapping("/contest/{id}/results")
+    @GetMapping("/contest/{id}")
     public GenericStatus getContestResults(@PathVariable("id") Integer id, HttpServletRequest httpServletRequest) {
         try {
             Session session = sessionBuilder.getCurrentSession(httpServletRequest);
             Optional<Contest> contestHandle = contestRepository.findById(id);
             if(contestHandle.isPresent()) {
                 Contest contest = contestHandle.get();
+                return GenericStatus.createSuccessfulStatus(contest);
             } else {
                 throw new NoSuchElementException("Contest not found.");
             }
-            return GenericStatus.createSuccessfulStatus(null);
         } catch (Exception e) {
             return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, e.getMessage(), e);
         }
