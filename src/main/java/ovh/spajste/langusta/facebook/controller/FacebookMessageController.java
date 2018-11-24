@@ -59,16 +59,18 @@ public class FacebookMessageController {
                     }   httpServletResponse.setStatus(202);
                 }
             } else {
+                httpServletResponse.setStatus(404);
                 throw new NoSuchElementException("No Facebook access tokens found!");
             }
             return GenericStatus.createSuccessfulStatus(null);
         } catch (Exception e) {
+            httpServletResponse.setStatus(500);
             return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, e.getMessage(), e);
         }
     }
 
     @GetMapping("/facebook/page/{id}/conversations")
-    public GenericStatus getAllConversationsFromPage(@PathVariable String id, HttpServletRequest httpServletRequest) {
+    public GenericStatus getAllConversationsFromPage(@PathVariable String id, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             Session session = sessionBuilder.getCurrentSession(httpServletRequest);
             List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
@@ -84,10 +86,13 @@ public class FacebookMessageController {
                     }
                 }
             } else {
+                httpServletResponse.setStatus(404);
                 throw new NoSuchElementException("No Facebook access tokens found!");
             }
-            return GenericStatus.createSuccessfulStatus(null);
+            httpServletResponse.setStatus(500);
+            return GenericStatus.createFailedStatusWithAdditionalInfo("Unknown error!", null);
         } catch (Exception e) {
+            httpServletResponse.setStatus(500);
             return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, e.getMessage(), e);
         }
     }

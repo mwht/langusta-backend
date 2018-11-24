@@ -37,9 +37,8 @@ public class FacebookUserProfileController {
         return GenericStatus.createSuccessfulStatus(null);
     }
 
-    @CrossOrigin(origins = "*")
     @GetMapping("/facebook/profile/me")
-    public GenericStatus getMineFacebookProfile(HttpServletRequest httpServletRequest) {
+    public GenericStatus getMineFacebookProfile(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             Session session = sessionBuilder.getCurrentSession(httpServletRequest);
             List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
@@ -52,6 +51,7 @@ public class FacebookUserProfileController {
             FacebookProfile myFacebookProfile = facebookService.getMyProfile();
             return GenericStatus.createSuccessfulStatus(myFacebookProfile);
         } catch(Exception e) {
+            httpServletResponse.setStatus(500);
             return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, e.getMessage(), e);
         }
     }

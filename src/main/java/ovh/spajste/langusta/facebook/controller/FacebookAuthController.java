@@ -41,7 +41,6 @@ public class FacebookAuthController {
     @Autowired
     private SessionBuilder sessionBuilder;
 
-    @CrossOrigin(origins = "*")
     @GetMapping("/facebook/authSuccess")
     public GenericStatus onFacebookAuthSuccess(@RequestParam("code") String code, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
@@ -68,11 +67,11 @@ public class FacebookAuthController {
             return GenericStatus.createSuccessfulStatus(BasicFacebookAccessTokenDataView.getDataViewFor(facebookAccessToken));
 
         } catch (Exception e) {
+            httpServletResponse.setStatus(500);
             return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "Can't obtain access token.", e);
         }
     }
 
-    @CrossOrigin(origins = "*")
     @GetMapping("/facebook/tokens")
     public GenericStatus getUserTokens(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
@@ -87,11 +86,11 @@ public class FacebookAuthController {
                 return GenericStatus.createSuccessfulStatus(null);
             }
         } catch (Exception e) {
+            httpServletResponse.setStatus(500);
             return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, null, e);
         }
     }
 
-    @CrossOrigin(origins = "*")
     @GetMapping("/facebook/createAuth/{authToken}")
     public GenericStatus generateAuth(@PathVariable("authToken") String authToken, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {

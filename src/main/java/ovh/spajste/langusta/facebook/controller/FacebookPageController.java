@@ -35,9 +35,8 @@ public class FacebookPageController {
     @Autowired
     private FacebookService facebookService;
 
-    @CrossOrigin(origins = "*")
     @GetMapping("/facebook/page/all")
-    public GenericStatus getAllPages(HttpServletRequest httpServletRequest) {
+    public GenericStatus getAllPages(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             Session session = sessionBuilder.getCurrentSession(httpServletRequest);
             List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
@@ -45,15 +44,17 @@ public class FacebookPageController {
                 facebookService.setAccessToken(facebookAccessTokens.get(0).getAccessToken());
                 return GenericStatus.createSuccessfulStatus(facebookService.getAllPages());
             } else {
+                httpServletResponse.setStatus(404);
                 throw new NoSuchElementException("No Facebook access tokens found!");
             }
         } catch (Exception e) {
+            httpServletResponse.setStatus(500);
             return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, e.getMessage(), e);
         }
     }
 
     @GetMapping("/facebook/page/{id}/posts")
-    public GenericStatus getPostsFromPage(@PathVariable("id") String id, HttpServletRequest httpServletRequest) {
+    public GenericStatus getPostsFromPage(@PathVariable("id") String id, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             Session session = sessionBuilder.getCurrentSession(httpServletRequest);
             List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
@@ -74,9 +75,11 @@ public class FacebookPageController {
                 }
                 */
             } else {
+                httpServletResponse.setStatus(404);
                 throw new NoSuchElementException("No Facebook access tokens found!");
             }
         } catch (Exception e) {
+            httpServletResponse.setStatus(500);
             return GenericStatus.createFailedStatusWithAdditionalInfo(e.getMessage(), e);
         }
     }

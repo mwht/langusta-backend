@@ -8,6 +8,8 @@ import java.util.logging.Logger;
 
 @RestController
 public class FacebookPageWebhookController {
+
+    @CrossOrigin("*")
     @RequestMapping(name = "/facebook/webhook", method = {RequestMethod.GET, RequestMethod.POST})
     public String facebookWebhookHandler(@RequestParam(name = "hub.mode", required = false) String hubMode,
                                          @RequestParam(name = "hub.challenge", required = false) String hubChallenge,
