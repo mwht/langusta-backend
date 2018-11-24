@@ -27,7 +27,9 @@ public class FacebookContestHandler implements ContestHandler {
         try {
             ApplicationContext applicationContext = SpringContext.getApplicationContext();
             FacebookService facebookService = (FacebookService) applicationContext.getBeansOfType(FacebookService.class).get("facebookService");
-            facebookService.setAccessToken(facebookAccessTokenRepository.findByUserId(contest.getUser().getId()).get(0).getAccessToken());
+            facebookService.setAccessToken(
+                    facebookAccessTokenRepository.findByUserId(contest.getUser().getId()).get(0).getAccessToken()
+            );
             Pattern regex = Pattern.compile("^(\\d+)_");
             String pageId = null;
 
