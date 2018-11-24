@@ -43,7 +43,7 @@ public class LoginController {
                         if(userToAuth.getActive()) {
                             String trackingId = Session.getNewToken();
                             String ipAddress = httpServletRequest.getHeader("X-Forwarded-For");
-                            if (ipAddress == null) httpServletRequest.getRemoteAddr();
+                            if (ipAddress == null) ipAddress = httpServletRequest.getRemoteAddr();
 
                             String userAgent = httpServletRequest.getHeader("User-Agent");
                             if (userAgent == null) userAgent = "";
