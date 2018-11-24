@@ -39,8 +39,11 @@ public class FacebookContestHandler implements ContestHandler {
                 try {
                     while (regexMatcher.find()) {
                         pageId = regexMatcher.group(1);
-                        Logger.getAnonymousLogger().info("FacebookContestHandler: Setting access token to " + facebookBasicPageInfo.getName());
-                        facebookService.setAccessToken(facebookBasicPageInfo.getAccessToken());
+                        if(contest.getPostLink().startsWith(pageId)) {
+                            Logger.getAnonymousLogger().info("Setting access token to " + facebookBasicPageInfo.getName());
+                            facebookService.setAccessToken(facebookBasicPageInfo.getAccessToken());
+                            break;
+                        }
                         break;
                     }
                 } catch (NullPointerException npe) {
@@ -73,7 +76,8 @@ public class FacebookContestHandler implements ContestHandler {
                 try {
                     while (regexMatcher.find()) {
                         pageId = regexMatcher.group(1);
-                        if(pageId.equals(facebookBasicPageInfo.getId())) {
+                        if(contest.getPostLink().startsWith(pageId)) {
+                            Logger.getAnonymousLogger().info("Setting access token to " + facebookBasicPageInfo.getName());
                             facebookService.setAccessToken(facebookBasicPageInfo.getAccessToken());
                             break;
                         }
