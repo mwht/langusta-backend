@@ -79,7 +79,6 @@ public class FacebookPageController {
         } catch (Exception e) {
             return GenericStatus.createFailedStatusWithAdditionalInfo(e.getMessage(), e);
         }
-        return GenericStatus.createFailedStatusWithAdditionalInfo("Unknown error!", null);
     }
 
     @CrossOrigin(origins = "*")
