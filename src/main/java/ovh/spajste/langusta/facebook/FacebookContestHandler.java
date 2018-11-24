@@ -14,7 +14,7 @@ public class FacebookContestHandler implements ContestHandler {
     public void doContest(Contest contest) {
 
         // https://www.facebook.com/[dont care]/posts/[post id]
-        Pattern linkRegex = Pattern.compile("^https://www.facebook.com/(.*)/posts/(.*)");
+        Pattern linkRegex = Pattern.compile("^https:\\/\\/www\\.facebook\\.com\\/(.*)\\/posts\\/(\\d+)");
         String postId = null;
 
         Matcher regexMatcher = linkRegex.matcher(contest.getPostLink());
