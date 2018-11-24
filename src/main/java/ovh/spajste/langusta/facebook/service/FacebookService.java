@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import ovh.spajste.langusta.facebook.entity.*;
+import ovh.spajste.langusta.facebook.entity.posts.FacebookPosts;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -59,6 +60,11 @@ public class FacebookService {
         Facebook facebook = new FacebookTemplate(accessToken);
         String[] fields = {"accounts{id,name,fan_count,has_added_app,page_token,access_token}"};
         return facebook.fetchObject("me", FacebookPageQueryResponse.class, fields);
+    }
+
+    public FacebookPosts getPostsFromPage(String pageId) {
+        Facebook facebook = new FacebookTemplate(accessToken);
+        return  facebook.fetchObject("me/posts", FacebookPosts.class);
     }
 
     public FacebookConversationsQueryResponse getIdsForAllConversations() {

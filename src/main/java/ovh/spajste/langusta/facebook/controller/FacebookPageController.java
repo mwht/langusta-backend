@@ -52,6 +52,22 @@ public class FacebookPageController {
         }
     }
 
+    @GetMapping("/facebook/page/{id}/posts")
+    public GenericStatus getPostsFromPage(@PathVariable("id") String id, HttpServletRequest httpServletRequest) {
+        try {
+            Session session = sessionBuilder.getCurrentSession(httpServletRequest);
+            List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
+            if(facebookAccessTokens.size() > 0) {
+                facebookService.setAccessToken(facebookAccessTokens.get(0).getAccessToken());
+                return GenericStatus.createSuccessfulStatus(facebookService.getPostsFromPage(id));
+            } else {
+                throw new NoSuchElementException("No Facebook access tokens found!");
+            }
+        } catch (Exception e) {
+
+        }
+    }
+
     @CrossOrigin(origins = "*")
     @PostMapping(path = "/facebook/page/{id}/post", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public GenericStatus addNewPost(@PathVariable("id") String id, @RequestParam String content, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
