@@ -47,6 +47,8 @@ public class FacebookContestHandler implements ContestHandler {
             Logger.getAnonymousLogger().info("FB contest handler - contest link " + contest.getPostLink() + ", " + facebookPostReactions.getReactions().getData().size() + " reactions");
             return contest;
         } catch (Exception e) {
+            Logger.getAnonymousLogger().severe("Can't fetch data for contest (\"" + contest.getTitle() + "\"): " + e.getClass().getSimpleName() + ": " + e.getMessage());
+            e.printStackTrace();
             return contest;
         }
     }
@@ -80,6 +82,8 @@ public class FacebookContestHandler implements ContestHandler {
             contest.setWinnerId(facebookPostReactions.getReactions().getData().get(winner).getId());
             return contest;
         } catch (Exception e) {
+            Logger.getAnonymousLogger().severe("Can't do contest (\"" + contest.getTitle() + "\"): " + e.getClass().getSimpleName() + ": " + e.getMessage());
+            e.printStackTrace();
             return contest;
         }
     }
