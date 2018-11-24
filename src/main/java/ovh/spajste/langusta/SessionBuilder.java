@@ -37,7 +37,7 @@ public class SessionBuilder {
 
     @PostConstruct
     public void init() {
-        System.out.println("================== " + langustaHmacSecret + "================== ");
+
     }
 
     public Session getCurrentSession(HttpServletRequest httpServletRequest) {
@@ -59,8 +59,6 @@ public class SessionBuilder {
                 throw new SecurityException("No valid Langusta token supplied!");
             }
         }
-
-        Logger.getAnonymousLogger().info("!!! HMAC: " + langustaHmacSecret);
 
         Session resultSession = buildFromJWT(jwtToken, langustaHmacSecret, sessionRepository);
         return resultSession;
