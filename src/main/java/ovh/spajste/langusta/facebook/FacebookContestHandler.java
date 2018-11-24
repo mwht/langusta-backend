@@ -93,6 +93,7 @@ public class FacebookContestHandler implements ContestHandler {
             Logger.getAnonymousLogger().info("FB contest handler - contest ended, winner id = " + facebookPostReactions.getReactions().getData().get(winner).getId()
                     + ", winner name = " + facebookPostReactions.getReactions().getData().get(winner).getName());
             contest.setWinnerId(facebookPostReactions.getReactions().getData().get(winner).getId());
+            contest.setWinnerDisplayName(facebookPostReactions.getReactions().getData().get(winner).getName());
             return contest;
         } catch (Exception e) {
             Logger.getAnonymousLogger().severe("Can't do contest (\"" + contest.getTitle() + "\"): " + e.getClass().getSimpleName() + ": " + e.getMessage());
