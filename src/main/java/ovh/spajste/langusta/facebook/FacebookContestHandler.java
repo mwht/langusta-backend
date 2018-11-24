@@ -73,7 +73,7 @@ public class FacebookContestHandler implements ContestHandler {
                 try {
                     while (regexMatcher.find()) {
                         pageId = regexMatcher.group(1);
-                        if(contest.getPostLink().startsWith(pageId)) {
+                        if(pageId.equals(facebookBasicPageInfo.getId())) {
                             facebookService.setAccessToken(facebookBasicPageInfo.getAccessToken());
                             break;
                         }
