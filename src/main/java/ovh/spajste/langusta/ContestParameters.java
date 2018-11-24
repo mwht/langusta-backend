@@ -4,15 +4,17 @@ public class ContestParameters {
     private String title;
     private String platform;
     private String postLink;
+    private Long endTime;
 
     public ContestParameters() {
-        this(null, null, null);
+        this(null, null, null, null);
     }
 
-    public ContestParameters(String title, String platform, String postLink) {
+    public ContestParameters(String title, String platform, String postLink, Long endTime) {
         this.title = title;
         this.platform = platform;
         this.postLink = postLink;
+        this.endTime = endTime;
     }
 
     public String getTitle() {
@@ -37,5 +39,13 @@ public class ContestParameters {
 
     public void setPostLink(String postLink) {
         this.postLink = postLink;
+    }
+
+    public Long getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Long endTime) {
+        this.endTime = endTime;
     }
 }

@@ -33,8 +33,8 @@ public class ContestController {
 
 
     @PostMapping(path = "/contest", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public GenericStatus addNewContest(@RequestParam String title, @RequestParam String platform, @RequestParam("post_link") String postLink, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        return addNewContestJson(new ContestParameters(title, platform, postLink), httpServletRequest, httpServletResponse);
+    public GenericStatus addNewContest(@RequestParam String title, @RequestParam String platform, @RequestParam("post_link") String postLink, @RequestParam("end_time") Long endTime, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        return addNewContestJson(new ContestParameters(title, platform, postLink, endTime), httpServletRequest, httpServletResponse);
     }
 
     @PostMapping(path = "/contest", consumes = {MediaType.APPLICATION_JSON_VALUE})
@@ -51,7 +51,7 @@ public class ContestController {
                     0,
                     0,
                     null,
-                    new Date(new Date().getTime() + 120000),
+                    new Date((long) contestParameters.getEndTime() * 1000),
                     false,
                     null
             );
