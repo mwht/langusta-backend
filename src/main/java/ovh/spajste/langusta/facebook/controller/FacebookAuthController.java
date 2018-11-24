@@ -41,6 +41,7 @@ public class FacebookAuthController {
     @Autowired
     private SessionBuilder sessionBuilder;
 
+    @CrossOrigin(origins = "*")
     @GetMapping("/facebook/authSuccess")
     public GenericStatus onFacebookAuthSuccess(@RequestParam("code") String code, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
