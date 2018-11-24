@@ -29,7 +29,6 @@ public class UserController {
     @Autowired
     private MailService mailService;
 
-    @CrossOrigin(origins = "*")
     @GetMapping("/user/me")
     public GenericStatus getLoggedInUser(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
@@ -96,11 +95,18 @@ public class UserController {
     }
 
     @GetMapping("/user/all")
-    public GenericStatus getAllUsers() {
-        Iterable<User> users = userRepository.findAll();
-        return GenericStatus.createSuccessfulStatus(users);
+    public GenericStatus getAllUsers(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        Session session = sessionBuilder.getCurrentSession(httpServletRequest);
+        if(session != null) {
+            Iterable<User> users = userRepository.findAll();
+            return GenericStatus.createSuccessfulStatus(users);
+        } else {
+            httpServletResponse.setStatus(401);
+            return GenericStatus.createFailedStatusWithAdditionalInfo("Not logged in.", null);
+        }
     }
 
+    /*
     @DeleteMapping("/user/{id}")
     public GenericStatus deleteUser(@PathVariable("id") Integer id, HttpServletResponse httpServletResponse) {
         if(userRepository.existsById(id)) {
@@ -111,16 +117,22 @@ public class UserController {
             return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "User doesn't exist.", null);
         }
     }
+    */
 
-    /* TODO: remove? */
     @GetMapping("/user/{id}")
-    public GenericStatus getUserById(@PathVariable("id") Integer id, HttpServletResponse httpServletResponse) {
-        Optional<User> requestedUser = userRepository.findById(id);
-        try {
-            return GenericStatus.createSuccessfulStatus(requestedUser.get());
-        } catch (NoSuchElementException nsee){
-            httpServletResponse.setStatus(404);
-            return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "User not found.", nsee);
+    public GenericStatus getUserById(@PathVariable("id") Integer id, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        Session session = sessionBuilder.getCurrentSession(httpServletRequest);
+        if(session != null) {
+            Optional<User> requestedUser = userRepository.findById(id);
+            try {
+                return GenericStatus.createSuccessfulStatus(requestedUser.get());
+            } catch (NoSuchElementException nsee) {
+                httpServletResponse.setStatus(404);
+                return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, "User not found.", nsee);
+            }
+        } else {
+            httpServletResponse.setStatus(401);
+            return GenericStatus.createFailedStatusWithAdditionalInfo("Not logged in.", null);
         }
     }
 }
