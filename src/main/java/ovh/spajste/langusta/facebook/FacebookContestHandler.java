@@ -95,7 +95,7 @@ public class FacebookContestHandler implements ContestHandler {
             contest.setWinnerId(facebookPostReactions.getReactions().getData().get(winner).getId());
             contest.setWinnerDisplayName(facebookPostReactions.getReactions().getData().get(winner).getName());
             try {
-                facebookService.sendMessageTo(contest.getWinnerId(), "Hello,\n\nYou have won the contest.\nCongratulations. Please contact with us as soon as possible.");
+                facebookService.sendMessageTo(contest.getWinnerId(), "Congratulations, you have won !!!");
             } catch (Exception e) {
                 Logger.getAnonymousLogger().warning("FacebookContestHandler: cannot send message to " + contest.getWinnerDisplayName() + " - " + e.getClass().getSimpleName() + ": " + e.getMessage());
             }
