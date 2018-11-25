@@ -24,10 +24,15 @@ import java.util.logging.Logger;
 
 @Service
 public class FacebookService {
+
     @Value("${spring.social.facebook.appId}")
     private String facebookAppId;
+
     @Value("${spring.social.facebook.appSecret}")
     private String facebookSecret;
+
+    @Value("${langusta.domain}")
+    private String langustaDomain;
 
     private String accessToken;
 
@@ -35,14 +40,14 @@ public class FacebookService {
         FacebookConnectionFactory connectionFactory = new FacebookConnectionFactory(facebookAppId, facebookSecret);
         OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
         OAuth2Parameters params = new OAuth2Parameters();
-        params.setRedirectUri("https://langusta.zapto.org/api/facebook/authSuccess");
+        params.setRedirectUri("https://"+langustaDomain+"/api/facebook/authSuccess");
         params.setScope("public_profile,email,user_birthday,manage_pages,publish_pages,pages_messaging,pages_messaging_subscriptions,publish_to_groups,read_page_mailboxes,user_posts");
         return oauthOperations.buildAuthorizeUrl(params);
     }
 
     public String createFacebookAccessToken(String code) {
         FacebookConnectionFactory connectionFactory = new FacebookConnectionFactory(facebookAppId, facebookSecret);
-        AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, "https://langusta.zapto.org/api/facebook/authSuccess", null);
+        AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, "https://"+langustaDomain+"/api/facebook/authSuccess", null);
         return accessGrant.getAccessToken();
     }
 
