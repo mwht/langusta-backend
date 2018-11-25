@@ -34,6 +34,7 @@ public class ContestScheduler {
             if(contest.getEndDate().after(new Date())) {
                 ContestHandler contestHandler = ContestHandlerFactory.getInstance(contest.getPlatform().getCanonicalName());
                 contestHandler.fetchNewContestData(contest);
+                contestRepository.save(contest);
             }
         }
     }
