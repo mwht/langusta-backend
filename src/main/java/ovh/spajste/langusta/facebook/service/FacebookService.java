@@ -84,6 +84,7 @@ public class FacebookService {
         return facebook.fetchObject(pageId+"_"+postId, FacebookPostComments.class, fields);
     }
 
+    /* TODO: replace method sendMessage with sendMessageTo */
     public void sendMessage(FacebookConversationId facebookConversationId, String content) {
         Facebook facebook = new FacebookTemplate(accessToken);
         MultiValueMap<String, Object> fields = new LinkedMultiValueMap<>();
@@ -91,6 +92,19 @@ public class FacebookService {
         strings.add(content);
         fields.put("message",strings);
         facebook.post(facebookConversationId.getId()+"/messages", fields);
+    }
+
+    public void sendMessageTo(String facebookId, String message) {
+        Facebook facebook = new FacebookTemplate(accessToken);
+        MultiValueMap<String, Object> fields = new LinkedMultiValueMap<>();
+        ArrayList<Object> strings = new ArrayList<>();
+        strings.add("{\"text\": \""+message+"\"}");
+        // TODO: build query with Jackson instead of manual string building
+        fields.put("message",strings);
+        ArrayList<Object> recipients = new ArrayList<>();
+        strings.add("{\"id\": \""+facebookId+"\"}");
+        fields.put("recipient", recipients);
+        facebook.post("me/messages", fields);
     }
 
     public void addNewPost(String pageId, String content) {
