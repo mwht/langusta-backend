@@ -12,16 +12,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import ovh.spajste.langusta.SessionBuilder;
 import ovh.spajste.langusta.entity.Session;
+import ovh.spajste.langusta.repository.SessionRepository;
 import ovh.spajste.langusta.youtube.entity.YoutubeAccessToken;
 import ovh.spajste.langusta.youtube.repository.YoutubeAccessTokenRepository;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @WebServlet("/youtube/authCallback")
 public class YoutubeAuthCallbackServlet extends AbstractAuthorizationCodeCallbackServlet {
@@ -36,16 +40,26 @@ public class YoutubeAuthCallbackServlet extends AbstractAuthorizationCodeCallbac
     private YoutubeAccessTokenRepository youtubeAccessTokenRepository;
 
     @Autowired
-    private SessionBuilder sessionBuilder;
+    private SessionRepository sessionRepository;
 
     @Override
     protected void onSuccess(HttpServletRequest req, HttpServletResponse resp, Credential credential)
             throws ServletException, IOException {
         try {
-            Session session = sessionBuilder.getCurrentSession(req);
-            YoutubeAccessToken youtubeAccessToken = new YoutubeAccessToken(null, session.getUser().getId(), credential.getAccessToken(), new Date(((long)credential.getExpirationTimeMilliseconds()) * 1000L));
-            youtubeAccessTokenRepository.save(youtubeAccessToken);
-            resp.sendRedirect("/home");
+            for(Cookie cookie: req.getCookies()) {
+                if(cookie.getName().equals("ytauth")) {
+                    String trackingId = cookie.getValue();
+                    Optional<Session> sessionHandle = sessionRepository.findByTrackingId(trackingId);
+                    if(sessionHandle.isPresent()) {
+                        Session session = sessionHandle.get();
+                        YoutubeAccessToken youtubeAccessToken = new YoutubeAccessToken(null, session.getUser().getId(), credential.getAccessToken(), new Date(((long) credential.getExpirationTimeMilliseconds()) * 1000L));
+                        youtubeAccessTokenRepository.save(youtubeAccessToken);
+                        resp.sendRedirect("/home");
+                    } else {
+                        throw new NoSuchElementException("No valid Langusta session found!");
+                    }
+                }
+            }
         } catch (Exception e) {
             resp.sendRedirect("/error");
         }
@@ -61,7 +75,7 @@ public class YoutubeAuthCallbackServlet extends AbstractAuthorizationCodeCallbac
     @Override
     protected String getRedirectUri(HttpServletRequest req) throws ServletException, IOException {
         GenericUrl url = new GenericUrl(req.getRequestURL().toString());
-        url.setRawPath("/youtube/authCallback");
+        url.setRawPath("/api/youtube/authCallback");
         return url.build();
     }
 

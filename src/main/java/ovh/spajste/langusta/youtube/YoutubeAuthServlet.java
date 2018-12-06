@@ -37,7 +37,7 @@ public class YoutubeAuthServlet extends AbstractAuthorizationCodeServlet {
     @Override
     protected String getRedirectUri(HttpServletRequest req) throws ServletException, IOException {
         GenericUrl url = new GenericUrl(req.getRequestURL().toString());
-        url.setRawPath("/youtube/authCallback");
+        url.setRawPath("/api/youtube/authCallback");
         return url.build();
     }
 
