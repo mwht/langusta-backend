@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 
+// TODO: do something with successful auth (definitely persist somehow, whether using internal Google storage engine or store it in database
 @WebServlet("/youtube/beginAuth")
 public class YoutubeAuthServlet extends AbstractAuthorizationCodeServlet {
 

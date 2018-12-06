@@ -36,7 +36,7 @@ public class YoutubeAuthCallbackServlet extends AbstractAuthorizationCodeCallbac
     protected void onError(
             HttpServletRequest req, HttpServletResponse resp, AuthorizationCodeResponseUrl errorResponse)
             throws ServletException, IOException {
-        // handle error
+        resp.sendRedirect("/error");
     }
 
     @Override
