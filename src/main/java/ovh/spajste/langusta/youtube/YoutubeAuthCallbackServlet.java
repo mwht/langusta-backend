@@ -52,7 +52,7 @@ public class YoutubeAuthCallbackServlet extends AbstractAuthorizationCodeCallbac
                     Optional<Session> sessionHandle = sessionRepository.findByTrackingId(trackingId);
                     if(sessionHandle.isPresent()) {
                         Session session = sessionHandle.get();
-                        YoutubeAccessToken youtubeAccessToken = new YoutubeAccessToken(null, session.getUser().getId(), credential.getAccessToken(), new Date(((long) credential.getExpirationTimeMilliseconds()) * 1000L));
+                        YoutubeAccessToken youtubeAccessToken = new YoutubeAccessToken(null, session.getUser(), credential.getAccessToken(), new Date(((long) credential.getExpirationTimeMilliseconds()) * 1000L));
                         youtubeAccessTokenRepository.save(youtubeAccessToken);
                         resp.sendRedirect("/home");
                     } else {
