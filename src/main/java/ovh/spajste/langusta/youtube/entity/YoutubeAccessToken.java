@@ -22,7 +22,7 @@ public class YoutubeAccessToken {
         this(null, null, null, null);
     }
 
-    public YoutubeAccessToken(Integer id, Integer userId, String accessToken, Date expiryDate) {
+    public YoutubeAccessToken(Integer id, User userId, String accessToken, Date expiryDate) {
         this.id = id;
         this.userId = userId;
         this.accessToken = accessToken;
@@ -37,11 +37,11 @@ public class YoutubeAccessToken {
         this.id = id;
     }
 
-    public Integer getUserId() {
+    public User getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(User userId) {
         this.userId = userId;
     }
 
