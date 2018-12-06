@@ -1,5 +1,7 @@
 package ovh.spajste.langusta.youtube.entity;
 
+import ovh.spajste.langusta.entity.User;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -11,7 +13,7 @@ public class YoutubeAccessToken {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
-    private Integer userId;
+    private User userId;
 
     private String accessToken;
     private Date expiryDate;
