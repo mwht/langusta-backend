@@ -8,6 +8,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,9 +20,11 @@ import java.util.Collections;
 @WebServlet("/youtube/authCallback")
 public class YoutubeAuthCallbackServlet extends AbstractAuthorizationCodeCallbackServlet {
 
-    public YoutubeAuthCallbackServlet() {
+    @Value("${langusta.google.oauth.clientId}")
+    private String langustaClientId;
 
-    }
+    @Value("${langusta.google.oauth.clientSecret}")
+    private String langustaClientSecret;
 
     @Override
     protected void onSuccess(HttpServletRequest req, HttpServletResponse resp, Credential credential)
@@ -47,7 +50,7 @@ public class YoutubeAuthCallbackServlet extends AbstractAuthorizationCodeCallbac
     protected AuthorizationCodeFlow initializeFlow() throws IOException {
         return new GoogleAuthorizationCodeFlow.Builder(
                 new NetHttpTransport(), JacksonFactory.getDefaultInstance(),
-                "", "[[ENTER YOUR CLIENT SECRET]]",
+                langustaClientId, langustaClientSecret,
                 Collections.singleton("https://www.googleapis.com/auth/youtube.force-ssl")).setAccessType("offline").build();
     }
 
