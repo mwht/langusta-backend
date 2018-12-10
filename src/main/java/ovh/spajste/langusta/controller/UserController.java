@@ -119,6 +119,35 @@ public class UserController {
     }
     */
 
+    @PutMapping(path = "/user", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public GenericStatus updateUser(@RequestParam String currentPassword, @RequestParam String newPassword, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        try {
+            Session session = sessionBuilder.getCurrentSession(httpServletRequest);
+            if(session != null) {
+                User loggedInUser = session.getUser();
+                if(BCrypt.checkpw(currentPassword, loggedInUser.getPass())) {
+                    if(currentPassword.equals(newPassword)) {
+                        loggedInUser.setPass(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
+                        userRepository.save(loggedInUser);
+                        return GenericStatus.createSuccessfulStatus(null);
+                    } else {
+                        httpServletResponse.setStatus(406);
+                        return GenericStatus.createFailedStatusWithAdditionalInfo("Provided passwords differ.", null)
+                    }
+                } else {
+                    httpServletResponse.setStatus(406);
+                    return GenericStatus.createFailedStatusWithAdditionalInfo("Invalid password.", null);
+                }
+            } else {
+                httpServletResponse.setStatus(401);
+                return GenericStatus.createFailedStatusWithAdditionalInfo("Not logged in.", null);
+            }
+        } catch (Exception e) {
+            httpServletResponse.setStatus(500);
+            return GenericStatus.createFailedStatusWithAdditionalInfo(e.getMessage(), e);
+        }
+    }
+
     @GetMapping("/user/{id}")
     public GenericStatus getUserById(@PathVariable("id") Integer id, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         Session session = sessionBuilder.getCurrentSession(httpServletRequest);
