@@ -82,6 +82,25 @@ public class ContestController {
         }
     }
 
+    @DeleteMapping("/contest/{id}")
+    public GenericStatus deleteContest(@PathVariable("id") Integer id, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        try {
+            Session session = sessionBuilder.getCurrentSession(httpServletRequest);
+            Optional<Contest> contestHandle = contestRepository.findById(id);
+            if(contestHandle.isPresent()) {
+                Contest contest = contestHandle.get();
+                contestRepository.delete(contest);
+                return GenericStatus.createSuccessfulStatus(null);
+            } else {
+                httpServletResponse.setStatus(404);
+                throw new NoSuchElementException("Contest not found.");
+            }
+        } catch (Exception e) {
+            httpServletResponse.setStatus(500);
+            return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, e.getMessage(), e);
+        }
+    }
+
     @GetMapping("/contest/all")
     public GenericStatus getAllContests() {
         return GenericStatus.createSuccessfulStatus(contestRepository.findAll());
