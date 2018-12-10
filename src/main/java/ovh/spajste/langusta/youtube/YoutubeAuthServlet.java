@@ -17,9 +17,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.logging.Logger;
 
 // TODO: do something with successful auth (definitely persist somehow, whether using internal Google storage engine or store it in database
-@WebServlet("/youtube/beginAuth")
+@WebServlet("/api/youtube/beginAuth")
 public class YoutubeAuthServlet extends AbstractAuthorizationCodeServlet {
 
     @Value("${langusta.google.oauth.clientId}")
@@ -43,6 +44,8 @@ public class YoutubeAuthServlet extends AbstractAuthorizationCodeServlet {
 
     @Override
     protected AuthorizationCodeFlow initializeFlow() throws IOException {
+        Logger.getAnonymousLogger().info(langustaClientId);
+        Logger.getAnonymousLogger().info(langustaClientSecret);
         return new GoogleAuthorizationCodeFlow.Builder(
                 new NetHttpTransport(),
                 new JacksonFactory(),

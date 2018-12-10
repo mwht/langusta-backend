@@ -27,7 +27,7 @@ import java.util.Date;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-@WebServlet("/youtube/authCallback")
+@WebServlet("/api/youtube/authCallback")
 public class YoutubeAuthCallbackServlet extends AbstractAuthorizationCodeCallbackServlet {
 
     @Value("${langusta.google.oauth.clientId}")
@@ -52,7 +52,12 @@ public class YoutubeAuthCallbackServlet extends AbstractAuthorizationCodeCallbac
                     Optional<Session> sessionHandle = sessionRepository.findByTrackingId(trackingId);
                     if(sessionHandle.isPresent()) {
                         Session session = sessionHandle.get();
-                        YoutubeAccessToken youtubeAccessToken = new YoutubeAccessToken(null, session.getUser(), credential.getAccessToken(), new Date(((long) credential.getExpirationTimeMilliseconds()) * 1000L));
+                        YoutubeAccessToken youtubeAccessToken = new YoutubeAccessToken(
+                                null,
+                                session.getUser(),
+                                credential.getAccessToken(),
+                                new Date(((long) credential.getExpirationTimeMilliseconds()))
+                        );
                         youtubeAccessTokenRepository.save(youtubeAccessToken);
                         resp.sendRedirect("/home");
                     } else {
@@ -61,6 +66,7 @@ public class YoutubeAuthCallbackServlet extends AbstractAuthorizationCodeCallbac
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             resp.sendRedirect("/error");
         }
     }
