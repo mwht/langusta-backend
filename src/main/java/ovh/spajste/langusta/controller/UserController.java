@@ -7,6 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 import ovh.spajste.langusta.GenericStatus;
 import ovh.spajste.langusta.SessionBuilder;
+import ovh.spajste.langusta.UpdateUserParams;
 import ovh.spajste.langusta.entity.Session;
 import ovh.spajste.langusta.entity.User;
 import ovh.spajste.langusta.repository.SessionRepository;
@@ -120,7 +121,14 @@ public class UserController {
     */
 
     @PutMapping(path = "/user", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public GenericStatus updateUser(@RequestParam String currentPassword, @RequestParam String newPassword, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    public GenericStatus updateUser(@RequestBody String currentPassword, @RequestBody String newPassword, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        return updateUserJson(new UpdateUserParams(currentPassword, newPassword), httpServletRequest, httpServletResponse);
+    }
+
+    @PutMapping(path = "/user", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public GenericStatus updateUserJson(@RequestBody UpdateUserParams updateUserParams, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        String currentPassword = updateUserParams.getCurrentPassword();
+        String newPassword = updateUserParams.getNewPassword();
         try {
             Session session = sessionBuilder.getCurrentSession(httpServletRequest);
             if(session != null) {
