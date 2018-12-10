@@ -1,7 +1,6 @@
 package ovh.spajste.langusta.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +9,6 @@ import ovh.spajste.langusta.SessionBuilder;
 import ovh.spajste.langusta.UpdateUserParams;
 import ovh.spajste.langusta.entity.Session;
 import ovh.spajste.langusta.entity.User;
-import ovh.spajste.langusta.repository.SessionRepository;
 import ovh.spajste.langusta.repository.UserRepository;
 import ovh.spajste.langusta.service.MailService;
 
