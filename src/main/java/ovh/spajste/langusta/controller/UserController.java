@@ -140,7 +140,7 @@ public class UserController {
                         return GenericStatus.createSuccessfulStatus(null);
                     } else {
                         httpServletResponse.setStatus(406);
-                        return GenericStatus.createFailedStatusWithAdditionalInfo("Provided passwords differ.", null)
+                        return GenericStatus.createFailedStatusWithAdditionalInfo("Provided passwords differ.", null);
                     }
                 } else {
                     httpServletResponse.setStatus(406);
