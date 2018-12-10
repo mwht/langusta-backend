@@ -13,7 +13,7 @@ public class YoutubeAccessToken {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
-    private User userId;
+    private User user;
 
     private String accessToken;
     private Date expiryDate;
@@ -24,7 +24,7 @@ public class YoutubeAccessToken {
 
     public YoutubeAccessToken(Integer id, User userId, String accessToken, Date expiryDate) {
         this.id = id;
-        this.userId = userId;
+        this.user = userId;
         this.accessToken = accessToken;
         this.expiryDate = expiryDate;
     }
@@ -37,12 +37,12 @@ public class YoutubeAccessToken {
         this.id = id;
     }
 
-    public User getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(User userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getAccessToken() {
