@@ -55,27 +55,4 @@ public class FacebookUserProfileController {
             return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, e.getMessage(), e);
         }
     }
-
-    /*
-    @CrossOrigin(origins = "*")
-    @PostMapping(path = "/facebook/profile/post", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE})
-    public GenericStatus addNewPostOnProfile(@RequestParam String content, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        try {
-            Session session = SessionBuilder.getCurrentSession(langustaHmacSecret, userRepository, httpServletRequest);
-            List<FacebookAccessToken> facebookAccessTokens = facebookAccessTokenRepository.findByUserId(session.getUser().getId());
-            if(facebookAccessTokens != null) {
-                FacebookAccessToken facebookAccessToken = facebookAccessTokens.get(0);
-                facebookService.setAccessToken(facebookAccessToken.getAccessToken());
-            } else {
-                throw new NoSuchElementException("No Facebook access tokens found!");
-            }
-
-            facebookService.addNewPost(content);
-            httpServletResponse.setStatus(201);
-            return GenericStatus.createSuccessfulStatus(null);
-        } catch (Exception e) {
-            return new GenericStatus(GenericStatus.GenericState.STATUS_ERROR, e.getMessage(), e);
-        }
-    }
-    */
 }
