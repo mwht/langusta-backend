@@ -45,7 +45,7 @@ public class YoutubeAuthServlet extends AbstractAuthorizationCodeServlet {
     protected AuthorizationCodeFlow initializeFlow() throws IOException {
         return new GoogleAuthorizationCodeFlow.Builder(
                 new NetHttpTransport(),
-                JacksonFactory.getDefaultInstance(),
+                new JacksonFactory(),
                 langustaClientId,
                 langustaClientSecret,
                 Collections.singleton("https://www.googleapis.com/auth/youtube.force-ssl"))
