@@ -132,13 +132,13 @@ public class UserController {
             if(session != null) {
                 User loggedInUser = session.getUser();
                 if(BCrypt.checkpw(currentPassword, loggedInUser.getPass())) {
-                    if(currentPassword.equals(newPassword)) {
+                    if(!currentPassword.equals(newPassword)) {
                         loggedInUser.setPass(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
                         userRepository.save(loggedInUser);
                         return GenericStatus.createSuccessfulStatus(null);
                     } else {
                         httpServletResponse.setStatus(406);
-                        return GenericStatus.createFailedStatusWithAdditionalInfo("Provided passwords differ.", null);
+                        return GenericStatus.createFailedStatusWithAdditionalInfo("Provided passwords are the same.", null);
                     }
                 } else {
                     httpServletResponse.setStatus(406);
