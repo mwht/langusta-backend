@@ -43,7 +43,13 @@ public class FacebookAuthController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/facebook/authSuccess")
-    public GenericStatus onFacebookAuthSuccess(@RequestParam("code") String code, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    public GenericStatus onFacebookAuthSuccess(@RequestParam(value = "code", defaultValue = "") String code, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        if(code.equals("")) {
+            httpServletResponse.setStatus(301);
+            httpServletResponse.addHeader("Location", "/home");
+            return GenericStatus.createSuccessfulStatus(null);
+        }
+
         try {
             //if(httpServletRequest.getHeader("X-Auth-Token") == null) throw new java.lang.IllegalAccessException("No Langusta auth token provided.");
             String trackingId = null;
