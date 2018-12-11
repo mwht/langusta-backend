@@ -7,5 +7,5 @@ import ovh.spajste.langusta.entity.User;
 import java.util.List;
 
 public interface ContestRepository extends CrudRepository<Contest, Integer> {
-    List<Contest> findContestByUser(User user);
+    List<Contest> findAllByUser(User user);
 }
