@@ -102,8 +102,19 @@ public class ContestController {
     }
 
     @GetMapping("/contest/all")
-    public GenericStatus getAllContests() {
-        return GenericStatus.createSuccessfulStatus(contestRepository.findAll());
+    public GenericStatus getAllContests(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        try {
+            Session session = sessionBuilder.getCurrentSession(httpServletRequest);
+            if(session != null) {
+                return GenericStatus.createSuccessfulStatus(contestRepository.findAllByUser(session.getUser()));
+            } else {
+                httpServletResponse.setStatus(401);
+                return GenericStatus.createFailedStatusWithAdditionalInfo("Not logged in.", null);
+            }
+        } catch(Exception e) {
+            httpServletResponse.setStatus(500);
+            return GenericStatus.createFailedStatusWithAdditionalInfo(e.getMessage(), e);
+        }
     }
 
 
