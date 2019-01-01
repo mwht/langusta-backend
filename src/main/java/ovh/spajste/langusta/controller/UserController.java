@@ -9,6 +9,7 @@ import ovh.spajste.langusta.SessionBuilder;
 import ovh.spajste.langusta.UpdateUserParams;
 import ovh.spajste.langusta.entity.Session;
 import ovh.spajste.langusta.entity.User;
+import ovh.spajste.langusta.repository.SessionRepository;
 import ovh.spajste.langusta.repository.UserRepository;
 import ovh.spajste.langusta.service.MailService;
 
@@ -24,6 +25,9 @@ public class UserController {
 
     @Autowired
     private SessionBuilder sessionBuilder;
+
+    @Autowired
+    private SessionRepository sessionRepository;
 
     @Autowired
     private MailService mailService;
@@ -135,6 +139,8 @@ public class UserController {
                     if(!currentPassword.equals(newPassword)) {
                         loggedInUser.setPass(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
                         userRepository.save(loggedInUser);
+                        session.setExpiryDate(new Date(0));
+                        sessionRepository.save(session);
                         return GenericStatus.createSuccessfulStatus(null);
                     } else {
                         httpServletResponse.setStatus(406);
