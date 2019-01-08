@@ -21,6 +21,8 @@ public class TokenFilter {
             ContestTokenSource contestTokenSource;
             if(!tokenSourceMap.containsKey(matcher.group(1))) {
                 /* TODO: support multiple sources */
+                System.out.println("Working Directory = " +
+                        System.getProperty("user.dir"));
                 contestTokenSource = ContestTokenSourceFactory.getInstance(matcher.group(1));
                 contestTokenSource.setUpTokenSource(matcher.group(2));
                 tokenSourceMap.put(matcher.group(1), contestTokenSource);
