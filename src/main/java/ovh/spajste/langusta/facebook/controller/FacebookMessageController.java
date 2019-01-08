@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ovh.spajste.langusta.GenericStatus;
 import ovh.spajste.langusta.SessionBuilder;
+import ovh.spajste.langusta.TokenFilter;
 import ovh.spajste.langusta.entity.Session;
 import ovh.spajste.langusta.facebook.entity.*;
 import ovh.spajste.langusta.facebook.repository.FacebookAccessTokenRepository;
@@ -50,7 +51,7 @@ public class FacebookMessageController {
                         facebookService.setAccessToken(pageAccessToken);
                         for(FacebookConversationId facebookConversationId: facebookService.getIdsForAllConversations().getConversations().getData()) {
                             try {
-                                facebookService.sendMessage(facebookConversationId, content.getContent());
+                                facebookService.sendMessage(facebookConversationId, TokenFilter.processText(content.getContent()));
                             } catch(Exception e) {
                                 /* TODO: report errors to client */
                                 e.printStackTrace();
