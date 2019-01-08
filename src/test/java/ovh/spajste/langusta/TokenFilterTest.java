@@ -29,6 +29,7 @@ public class TokenFilterTest {
     public void replacementTest() {
         assertEquals("This is a test string TEST123 hi mom", TokenFilter.processText("This is a test string {{file testCodes.txt}} hi mom"));
         assertEquals("here ur code: 321TEST", TokenFilter.processText("here ur code: {{file testCodes.txt}}"));
+        assertEquals("this is casual message", TokenFilter.processText("this is casual message"));
     }
 
     @After
