@@ -6,4 +6,6 @@ public interface ContestTokenSource {
     public String getTokenName(); // TODO: this is going to kill the optimization. try to redesign this module to suck
                                   // less in future.
     public String accessNextToken(Contest contest);
+    public void setUpTokenSource(Object source);
+    public int getRemainingTokens();
 }
