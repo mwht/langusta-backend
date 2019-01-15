@@ -123,7 +123,7 @@ public class UserController {
     */
 
     @PutMapping(path = "/user", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public GenericStatus updateUser(@RequestBody String currentPassword, @RequestBody String newPassword, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    public GenericStatus updateUser(@RequestParam(name = "currentPassword") String currentPassword, @RequestParam(name = "newPassword") String newPassword, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         return updateUserJson(new UpdateUserParams(currentPassword, newPassword), httpServletRequest, httpServletResponse);
     }
 
