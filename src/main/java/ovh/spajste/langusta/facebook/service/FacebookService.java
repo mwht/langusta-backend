@@ -97,7 +97,7 @@ public class FacebookService {
     public void sendMessageTo(String facebookId, String message) {
         Facebook facebook = new FacebookTemplate(accessToken);
         MultiValueMap<String, Object> fields = new LinkedMultiValueMap<>();
-        // TODO: build query with Jackson instead of manual string building
+        // TODO: build query with Jackson/org.json instead of manual string building
         ArrayList<Object> recipients = new ArrayList<>();
         recipients.add("{\"id\": \""+facebookId+"\"}");
         fields.put("recipient", recipients);
@@ -105,6 +105,7 @@ public class FacebookService {
         strings.add("{\"text\": \""+message+"\"}");
         fields.put("message",strings);
         facebook.post("me/messages", fields);
+        Logger.getAnonymousLogger().info("New message sent to " + facebookId + ": " + message);
     }
 
     public void addNewPost(String pageId, String content) {
