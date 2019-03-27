@@ -92,6 +92,7 @@ public class FacebookService {
         strings.add(content);
         fields.put("message",strings);
         facebook.post(facebookConversationId.getId()+"/messages", fields);
+        Logger.getAnonymousLogger().info("New message sent to conversation " + facebookConversationId.getId() + ": " + content);
     }
 
     public void sendMessageTo(String facebookId, String message) {
@@ -111,6 +112,7 @@ public class FacebookService {
     public void addNewPost(String pageId, String content) {
         Facebook facebook = new FacebookTemplate(accessToken);
         facebook.pageOperations().post(new PagePostData(pageId).message(content));
+        Logger.getAnonymousLogger().info("New post added to page " + pageId + ": " + content);
     }
 
     public FacebookPostReactions getFacebookPostAndReactions(String postId) {
