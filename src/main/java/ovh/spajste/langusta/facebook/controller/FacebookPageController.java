@@ -35,7 +35,7 @@ public class FacebookPageController {
     @Autowired
     private FacebookService facebookService;
 
-    @GetMapping("/facebook/page/all")
+    @GetMapping("/api/facebook/page/all")
     public GenericStatus getAllPages(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             Session session = sessionBuilder.getCurrentSession(httpServletRequest);
@@ -53,7 +53,7 @@ public class FacebookPageController {
         }
     }
 
-    @GetMapping("/facebook/page/{id}/posts")
+    @GetMapping("/api/facebook/page/{id}/posts")
     public GenericStatus getPostsFromPage(@PathVariable("id") String id, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             Session session = sessionBuilder.getCurrentSession(httpServletRequest);
@@ -85,13 +85,13 @@ public class FacebookPageController {
     }
 
     @CrossOrigin(origins = "*")
-    @PostMapping(path = "/facebook/page/{id}/post", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(path = "/api/facebook/page/{id}/post", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public GenericStatus addNewPost(@PathVariable("id") String id, @RequestParam String content, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         return addNewPostJson(id, new FacebookPost(content), httpServletRequest, httpServletResponse);
     }
 
     @CrossOrigin(origins = "*")
-    @PostMapping(path = "/facebook/page/{id}/post", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @PostMapping(path = "/api/facebook/page/{id}/post", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public GenericStatus addNewPostJson(@PathVariable("id") String id, @RequestBody FacebookPost content, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             Session session = sessionBuilder.getCurrentSession(httpServletRequest);

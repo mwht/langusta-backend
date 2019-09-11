@@ -32,12 +32,12 @@ public class ContestController {
     private SessionBuilder sessionBuilder;
 
 
-    @PostMapping(path = "/contest", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(path = "/api/contest", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public GenericStatus addNewContest(@RequestParam String title, @RequestParam String platform, @RequestParam("post_link") String postLink, @RequestParam("end_time") Long endTime, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         return addNewContestJson(new ContestParameters(title, platform, postLink, endTime), httpServletRequest, httpServletResponse);
     }
 
-    @PostMapping(path = "/contest", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(path = "/api/contest", consumes = {MediaType.APPLICATION_JSON_VALUE})
     public GenericStatus addNewContestJson(@RequestBody ContestParameters contestParameters, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             Session session = sessionBuilder.getCurrentSession(httpServletRequest);
@@ -64,7 +64,7 @@ public class ContestController {
         }
     }
 
-    @GetMapping("/contest/{id}")
+    @GetMapping("/api/contest/{id}")
     public GenericStatus getContestResults(@PathVariable("id") Integer id, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             Session session = sessionBuilder.getCurrentSession(httpServletRequest);
@@ -82,7 +82,7 @@ public class ContestController {
         }
     }
 
-    @DeleteMapping("/contest/{id}")
+    @DeleteMapping("/api/contest/{id}")
     public GenericStatus deleteContest(@PathVariable("id") Integer id, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             Session session = sessionBuilder.getCurrentSession(httpServletRequest);
@@ -101,7 +101,7 @@ public class ContestController {
         }
     }
 
-    @GetMapping("/contest/all")
+    @GetMapping("/api/contest/all")
     public GenericStatus getAllContests(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             Session session = sessionBuilder.getCurrentSession(httpServletRequest);

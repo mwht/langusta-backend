@@ -11,7 +11,6 @@ import ovh.spajste.langusta.entity.Session;
 import ovh.spajste.langusta.entity.User;
 import ovh.spajste.langusta.repository.SessionRepository;
 import ovh.spajste.langusta.repository.UserRepository;
-import ovh.spajste.langusta.service.MailService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,10 +28,8 @@ public class UserController {
     @Autowired
     private SessionRepository sessionRepository;
 
-    @Autowired
-    private MailService mailService;
 
-    @GetMapping("/user/me")
+    @GetMapping("/api/user/me")
     public GenericStatus getLoggedInUser(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             Session session = sessionBuilder.getCurrentSession(httpServletRequest);
@@ -56,7 +53,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/activate/{actcode}")
+    @GetMapping("/api/activate/{actcode}")
     public void activateUser(@PathVariable("actcode") String activationCode, HttpServletResponse httpServletResponse) {
         Optional<User> userToActivate = userRepository.findByActivationCode(activationCode);
         httpServletResponse.setStatus(301);
@@ -70,12 +67,12 @@ public class UserController {
         }
     }
 
-    @PostMapping(path = "/register", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(path = "/api/register", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public GenericStatus addUser(@RequestParam String email, @RequestParam String pass, @RequestParam String firstName, @RequestParam String lastName, HttpServletResponse httpServletResponse) {
         return addUserJson(new User(null, firstName, lastName, email, pass, false, null), httpServletResponse);
     }
 
-    @PostMapping(value = "/register", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/api/register", consumes = {MediaType.APPLICATION_JSON_VALUE})
     public GenericStatus addUserJson(@RequestBody User user, HttpServletResponse httpServletResponse) {
         try {
             List<User> users = userRepository.findByEmail(user.getEmail());
@@ -87,7 +84,6 @@ public class UserController {
                 user.setPass(BCrypt.hashpw(user.getPass(), BCrypt.gensalt()));
                 user.setActivationCode(UUID.randomUUID().toString());
                 userRepository.save(user);
-                mailService.sendMail(user.getEmail(), "Langusta registration notice", "Hello,\n\nYour mail has been given in registration at Langusta app.\nActivate your account at https://langusta.zapto.org/api/activate/"+user.getActivationCode()+"\n\nLangusta mail system");
                 httpServletResponse.setStatus(201);
                 return GenericStatus.createSuccessfulStatus(null);
             }
@@ -97,7 +93,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/user/all")
+    @GetMapping("/api/user/all")
     public GenericStatus getAllUsers(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         Session session = sessionBuilder.getCurrentSession(httpServletRequest);
         if(session != null) {
@@ -122,12 +118,12 @@ public class UserController {
     }
     */
 
-    @PutMapping(path = "/user", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PutMapping(path = "/api/user", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public GenericStatus updateUser(@RequestParam(name = "currentPassword") String currentPassword, @RequestParam(name = "newPassword") String newPassword, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         return updateUserJson(new UpdateUserParams(currentPassword, newPassword), httpServletRequest, httpServletResponse);
     }
 
-    @PutMapping(path = "/user", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/api/user", consumes = MediaType.APPLICATION_JSON_VALUE)
     public GenericStatus updateUserJson(@RequestBody UpdateUserParams updateUserParams, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         String currentPassword = updateUserParams.getCurrentPassword();
         String newPassword = updateUserParams.getNewPassword();
@@ -160,7 +156,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/api/user/{id}")
     public GenericStatus getUserById(@PathVariable("id") Integer id, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         Session session = sessionBuilder.getCurrentSession(httpServletRequest);
         if(session != null) {

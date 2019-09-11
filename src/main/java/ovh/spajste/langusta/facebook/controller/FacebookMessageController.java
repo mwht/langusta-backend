@@ -31,12 +31,12 @@ public class FacebookMessageController {
     @Autowired
     private FacebookService facebookService;
 
-    @PostMapping(path = "/facebook/page/{id}/conversations/all/send", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(path = "/api/facebook/page/{id}/conversations/all/send", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public GenericStatus pageConversationSend(@PathVariable("id") String id, @RequestParam String content, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         return pageConversationSendJson(id, new FacebookPost(content), httpServletRequest, httpServletResponse);
     }
 
-    @PostMapping(path = "/facebook/page/{id}/conversations/all/send", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @PostMapping(path = "/api/facebook/page/{id}/conversations/all/send", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public GenericStatus pageConversationSendJson(@PathVariable("id") String id, @RequestBody FacebookPost content, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             Session session = sessionBuilder.getCurrentSession(httpServletRequest);
@@ -70,7 +70,7 @@ public class FacebookMessageController {
         }
     }
 
-    @GetMapping("/facebook/page/{id}/conversations")
+    @GetMapping("/api/facebook/page/{id}/conversations")
     public GenericStatus getAllConversationsFromPage(@PathVariable String id, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             Session session = sessionBuilder.getCurrentSession(httpServletRequest);

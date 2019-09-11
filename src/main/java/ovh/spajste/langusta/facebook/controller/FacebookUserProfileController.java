@@ -32,12 +32,12 @@ public class FacebookUserProfileController {
     private SessionBuilder sessionBuilder;
 
 
-    @GetMapping("/facebook/profile/{id}")
+    @GetMapping("/api/facebook/profile/{id}")
     public GenericStatus getFacebookProfile(@PathVariable("id") String id) {
         return GenericStatus.createSuccessfulStatus(null);
     }
 
-    @GetMapping("/facebook/profile/me")
+    @GetMapping("/api/facebook/profile/me")
     public GenericStatus getMineFacebookProfile(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             Session session = sessionBuilder.getCurrentSession(httpServletRequest);

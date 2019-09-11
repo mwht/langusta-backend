@@ -42,7 +42,7 @@ public class FacebookAuthController {
     private SessionBuilder sessionBuilder;
 
     @CrossOrigin(origins = "*")
-    @GetMapping("/facebook/authSuccess")
+    @GetMapping("/api/facebook/authSuccess")
     public GenericStatus onFacebookAuthSuccess(@RequestParam(value = "code", defaultValue = "") String code, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         if(code.equals("")) {
             httpServletResponse.setStatus(301);
@@ -79,7 +79,7 @@ public class FacebookAuthController {
         }
     }
 
-    @GetMapping("/facebook/tokens")
+    @GetMapping("/api/facebook/tokens")
     public GenericStatus getUserTokens(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             Session session = sessionBuilder.getCurrentSession(httpServletRequest);
@@ -98,7 +98,7 @@ public class FacebookAuthController {
         }
     }
 
-    @GetMapping("/facebook/createAuth/{authToken}")
+    @GetMapping("/api/facebook/createAuth/{authToken}")
     public GenericStatus generateAuth(@PathVariable("authToken") String authToken, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             /*if (httpServletRequest.getHeader("X-Auth-Token") == null)

@@ -5,7 +5,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import ovh.spajste.langusta.entity.Contest;
 import ovh.spajste.langusta.repository.ContestRepository;
-import ovh.spajste.langusta.service.MailService;
 
 import java.util.Date;
 
@@ -15,9 +14,6 @@ public class ContestScheduler {
     @Autowired
     private ContestRepository contestRepository;
 
-    @Autowired
-    private MailService mailService;
-
     @Scheduled(fixedRate = 60000) // approx 1 min
     public void doContest() {
         /* TODO: optimize SQL query or add method in ContestRepository interface */
@@ -26,8 +22,6 @@ public class ContestScheduler {
             if(contest.getEndDate().before(new Date()) && !contest.getEndNotificationSent()) { // end date before current date <=> current date after end
                 ContestHandler contestHandler = ContestHandlerFactory.getInstance(contest.getPlatform().getCanonicalName());
                 contest = contestHandler.doContest(contest);
-                mailService.sendMail(contest.getUser().getEmail(),"Contest \""+contest.getTitle()+"\" ended successfully", "Hello,\n\nContest \""+contest.getTitle()+"\" has ended at "+contest.getEndDate()+
-                        ".\nThe winner is "+contest.getWinnerDisplayName()+"\n\nLangusta system");
                 contest.setEndNotificationSent(true);
                 contestRepository.save(contest);
             }

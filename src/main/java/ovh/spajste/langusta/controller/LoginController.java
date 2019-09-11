@@ -32,7 +32,7 @@ public class LoginController {
     String langustaHmacSecret;
 
     @CrossOrigin(origins = "*")
-    @RequestMapping(value="/login", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @RequestMapping(value="/api/login", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public LoginStatus login(@RequestBody MultiValueMap<String, String> formData, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         if(formData.containsKey("username")) {
             if(formData.containsKey("password")) {
@@ -76,7 +76,7 @@ public class LoginController {
         }
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @RequestMapping(value = "/api/login", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
     public LoginStatus login(@RequestBody PlainLoginParameters loginParameters, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
             List<User> userToAuthHandle = userRepository.findByEmail(loginParameters.getUsername());
